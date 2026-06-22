@@ -149,6 +149,40 @@ a{text-decoration:none;color:inherit}
 /* BACK */
 .back{display:inline-flex;align-items:center;gap:5px;font-size:.82rem;font-weight:600;color:#64748b;cursor:pointer;margin-bottom:14px}
 .back:hover{color:#1e3a5f}
+
+/* QUIZ */
+.quiz-start{background:#fff;border-radius:12px;border:1px solid #e2e8f0;padding:32px;text-align:center;max-width:560px;margin:0 auto}
+.quiz-start h2{font-size:1.3rem;font-weight:800;color:#1e293b;margin-bottom:8px}
+.quiz-start p{font-size:.88rem;color:#64748b;margin-bottom:24px;line-height:1.6}
+.btn-start{background:#0ea5e9;color:#fff;border:none;padding:12px 32px;border-radius:8px;font-size:.9rem;font-weight:700;cursor:pointer;font-family:'Inter',sans-serif}
+.btn-start:hover{background:#0284c7}
+.q-card{background:#fff;border-radius:12px;border:1px solid #e2e8f0;padding:24px;max-width:700px;margin:0 auto}
+.q-num{font-size:.72rem;font-weight:700;color:#94a3b8;text-transform:uppercase;letter-spacing:.5px;margin-bottom:10px}
+.q-text{font-size:1rem;font-weight:700;color:#1e293b;margin-bottom:20px;line-height:1.5}
+.q-opts{display:flex;flex-direction:column;gap:8px;margin-bottom:16px}
+.q-opt{text-align:left;padding:12px 16px;border:1.5px solid #e2e8f0;border-radius:8px;font-size:.88rem;color:#1e293b;background:#fff;cursor:pointer;font-family:'Inter',sans-serif;font-weight:500;transition:all .12s}
+.q-opt:hover:not(:disabled){border-color:#0ea5e9;background:#f0f9ff}
+.q-opt.correct{background:#f0fdf4;border-color:#22c55e;color:#166534}
+.q-opt.wrong{background:#fef2f2;border-color:#ef4444;color:#991b1b}
+.q-opt:disabled{cursor:default}
+.q-exp{background:#f8fafc;border-radius:8px;padding:12px 14px;font-size:.84rem;color:#475569;line-height:1.6;border-left:3px solid #0ea5e9;margin-bottom:16px}
+.btn-next-q{background:#0ea5e9;color:#fff;border:none;padding:10px 24px;border-radius:8px;font-size:.86rem;font-weight:700;cursor:pointer;font-family:'Inter',sans-serif}
+.q-prog{height:4px;background:#e2e8f0;border-radius:2px;margin-bottom:20px;overflow:hidden}
+.q-prog-fill{height:100%;background:#0ea5e9;border-radius:2px;transition:width .3s}
+.q-result{background:#fff;border-radius:12px;border:1px solid #e2e8f0;padding:32px;text-align:center;max-width:560px;margin:0 auto}
+.q-result h2{font-size:1.4rem;font-weight:800;color:#1e293b;margin-bottom:8px}
+.q-score-big{font-size:3rem;font-weight:800;margin:16px 0}
+.q-result p{font-size:.88rem;color:#64748b;margin-bottom:20px}
+
+/* CHEAT SHEET */
+.sheet-grid{display:grid;grid-template-columns:repeat(2,1fr);gap:16px;padding-bottom:20px}
+.sheet-card{background:#fff;border-radius:10px;border:1px solid #e2e8f0;overflow:hidden}
+.sheet-card-hdr{padding:12px 16px;font-size:.82rem;font-weight:700;color:#fff;display:flex;align-items:center;gap:8px}
+.sheet-item{padding:10px 16px;border-bottom:1px solid #f1f5f9;display:flex;flex-direction:column;gap:2px}
+.sheet-item:last-child{border-bottom:none}
+.sheet-item-name{font-size:.84rem;font-weight:700;color:#1e293b;font-family:monospace}
+.sheet-item-desc{font-size:.78rem;color:#64748b;line-height:1.4}
+.sheet-item-cmd{font-size:.75rem;color:#0ea5e9;font-family:monospace;margin-top:2px;background:#f0f9ff;padding:2px 6px;border-radius:4px;display:inline-block}
 </style>
 </head>
 <body>
@@ -165,7 +199,9 @@ a{text-decoration:none;color:inherit}
   <div class="sb">
     <div class="sb-sec">Navigate</div>
     <div class="sb-item active" id="nav-dash" onclick="goView('dash')">📊 Dashboard</div>
-    <div class="sb-item" id="nav-tix" onclick="goView('tix')">🎫 All Tickets <span class="n" id="sb-open">6</span></div>
+    <div class="sb-item" id="nav-tix" onclick="goView('tix')">🎫 Tickets <span class="n" id="sb-open">31</span></div>
+    <div class="sb-item" id="nav-quiz" onclick="goView('quiz')">🧠 A+ Quiz</div>
+    <div class="sb-item" id="nav-sheet" onclick="goView('sheet')">📋 Cheat Sheet</div>
     <div class="sb-div"></div>
     <div class="sb-sec">Categories</div>
     <div class="sb-cat"><div class="dot" style="background:#3b82f6"></div>Microsoft 365</div>
@@ -238,6 +274,17 @@ a{text-decoration:none;color:inherit}
           </div>
         </div>
       </div>
+    <!-- QUIZ -->
+    <div class="view" id="view-quiz">
+      <div class="sec-ttl">🧠 CompTIA A+ Quiz — test your knowledge</div>
+      <div id="quiz-body" style="overflow-y:auto;flex:1;min-height:0"></div>
+    </div>
+
+    <!-- CHEAT SHEET -->
+    <div class="view" id="view-sheet">
+      <div class="sec-ttl">📋 IT Support Cheat Sheet — commands, shortcuts &amp; quick fixes</div>
+      <div id="sheet-body" style="overflow-y:auto;flex:1;min-height:0"></div>
+    </div>
     </div>
   </div>
 </div>
@@ -823,6 +870,764 @@ const TICKETS = [
     }
   }
 }
+,
+{
+  id:'TKT-007',title:"M365 account locked — can't sign in at all",
+  priority:'high',category:'Microsoft 365',catColor:'#3b82f6',
+  user:'Diane Ellis',role:'Personal Assistant · Barker & Sons Ltd',
+  time:'08:52 today',hint:"Always check the sign-in logs when an account locks — tells you if it was the user mistyping or an actual attack from an unknown location.",
+  message:"I can't sign into Microsoft 365 at all — it says my account has been locked. I've tried resetting my password but it won't let me do anything. I have an important meeting in 20 minutes that I need access for.",
+  scenes:{
+    start:{prompt:"Diane is completely locked out of M365. What do you check first?",opts:[
+      {t:"Check Diane's account status and sign-in logs in M365 Admin",next:'check_admin',pts:3,tag:'good',fb:"Right — confirm the lockout and check what triggered it before doing anything."},
+      {t:"Reset Diane's password immediately to restore access",next:'reset_first',pts:1,tag:'ok',fb:"You could, but first check WHY it locked — it might be a security incident, not a typo."},
+      {t:"Ask Diane how many times she tried to sign in",next:'ask_attempts',pts:2,tag:'ok',fb:"Useful context, but the admin logs are faster and more accurate."},
+    ]},
+    check_admin:{info:"M365 Admin > Sign-in logs show 18 failed attempts in the last 15 minutes — all from Diane's usual office IP.",prompt:"18 failed attempts from her own IP — looks like mistyping. What do you do?",opts:[
+      {t:"Unlock the account and walk Diane through resetting her password",next:'unlock',pts:3,tag:'good',fb:"Correct — same IP means no security concern. Unlock + password reset."},
+      {t:"Treat it as a potential breach and escalate to senior IT",next:'escalate',pts:0,tag:'bad',fb:"All attempts are from Diane's known office IP at her normal login time. Not suspicious — no need to escalate."},
+    ]},
+    ask_attempts:{info:"Diane says she tried loads of times because she wasn't sure if she'd changed her password.",prompt:"Probably just mistyping. Confirm via admin logs.",opts:[
+      {t:"Check M365 Admin sign-in logs and unlock if safe",next:'check_admin',pts:3,tag:'good',fb:"Admin logs give you the full picture in seconds."},
+    ]},
+    reset_first:{info:"You reset the password but Diane still can't sign in — the account is locked and needs unlocking separately from a password reset.",prompt:"Password reset and account unlock are two different things in M365.",opts:[
+      {t:"Also unlock the account in M365 Admin > Unblock sign-in",next:'unlock',pts:2,tag:'ok',fb:"Correct — in M365, reset password AND unblock sign-in are separate actions."},
+    ]},
+    escalate:{info:"Senior IT checks the logs — all attempts from Diane's office IP at her normal time. It was just mistyping. Escalation delayed her access by 10 minutes.",prompt:"False alarm. Now unlock the account.",opts:[
+      {t:"Unlock the account and reset the password",next:'unlock',pts:1,tag:'ok',fb:"Should have checked logs yourself first."},
+    ]},
+    unlock:{info:"M365 Admin > Users > Diane Ellis > Reset password + Unblock sign-in. Done. She logs in successfully.",prompt:"She's in. What's worth mentioning to her to prevent this next time?",opts:[
+      {t:"Tell Diane about the self-service password reset portal — she can unlock herself next time",next:'resolved',pts:3,tag:'good',fb:"Perfect — SSPR means she doesn't need IT for lockouts. Saves everyone time."},
+      {t:"Leave it — she's in now, job done",next:'resolved',pts:0,tag:'bad',fb:"Technically resolved, but you've missed the chance to prevent the same call next week."},
+    ]},
+    resolved:{resolved:true,summary:"Diane has access and knows how to use self-service password reset in future.",lesson:"Account lockouts need TWO steps: unlock the account AND reset the password — they're separate in M365. Always check sign-in logs to tell the difference between mistyping (same IP, normal hours) and an attack (foreign IPs, unusual times). Enable Self-Service Password Reset (SSPR) so users can unlock themselves 24/7 without calling IT.",tip:"SSPR is under Azure Active Directory > Password Reset in the M365 admin portal. Users register a mobile number or alternative email. Reduces helpdesk calls significantly — most lockouts are self-inflicted and users can fix them instantly."}
+  }
+},
+{
+  id:'TKT-008',title:"Shared mailbox disappeared from Outlook",
+  priority:'medium',category:'Microsoft 365',catColor:'#3b82f6',
+  user:'Craig Morrison',role:'Sales Executive · Barker & Sons Ltd',
+  time:'10:05 today',hint:"Before changing any permissions, always confirm with a manager whether the access removal was intentional — it sometimes happens for a reason.",
+  message:"The 'sales@barkerandsons.co.uk' shared mailbox has completely disappeared from my Outlook. I had access to it all last week and I need it to respond to client emails. Can you add it back?",
+  scenes:{
+    start:{prompt:"Craig's shared mailbox has vanished. Where do you start?",opts:[
+      {t:"Check if Craig still has permission to the mailbox in M365 Admin",next:'check_perms',pts:3,tag:'good',fb:"Permissions are the most common reason a shared mailbox disappears — check them first."},
+      {t:"Tell Craig to remove and re-add the account in Outlook",next:'outlook_fix',pts:0,tag:'bad',fb:"Software fixes won't help if the underlying permission was removed. Check the root cause."},
+      {t:"Check if the shared mailbox still exists in M365",next:'check_exists',pts:2,tag:'ok',fb:"Worth confirming, though it's more likely a permissions issue."},
+    ]},
+    check_perms:{info:"M365 Admin > Groups > Shared Mailboxes > sales@ — Craig is NOT listed as a member. He's been removed.",prompt:"Permission removed. Before re-adding him, what should you do?",opts:[
+      {t:"Ask Craig's manager whether the removal was intentional",next:'ask_manager',pts:3,tag:'good',fb:"Always verify intent before restoring access — removals can happen for a reason (role change, HR issue)."},
+      {t:"Re-add Craig to the mailbox immediately",next:'re_add_early',pts:0,tag:'bad',fb:"Don't restore access without confirming it should be restored — the removal may have been deliberate."},
+    ]},
+    check_exists:{info:"The sales mailbox exists and is active — other staff can see it fine. It's a permissions issue for Craig specifically.",prompt:"It's Craig's permissions. What now?",opts:[
+      {t:"Check Craig's permissions in M365 and then verify with his manager",next:'check_perms',pts:3,tag:'good',fb:"Right — check what changed, then confirm with a manager before changing it back."},
+    ]},
+    outlook_fix:{info:"Craig removes and re-adds his email account in Outlook settings. The shared mailbox still doesn't appear — because his permission was revoked.",prompt:"Software wasn't the issue. What actually happened?",opts:[
+      {t:"Check Craig's permissions in M365 Admin",next:'check_perms',pts:2,tag:'ok',fb:"Should have been the first check — shared mailboxes disappear when permissions are removed."},
+    ]},
+    ask_manager:{info:"Karen (Office Manager) confirms: Craig moved from Sales to Marketing last week. The sales mailbox access was removed on purpose. Craig wasn't told.",prompt:"The removal was correct — Craig shouldn't have this access. What do you do?",opts:[
+      {t:"Explain to Craig that his access was removed as part of his role change and was intentional",next:'resolved',pts:3,tag:'good',fb:"Clear communication. Craig understands, no security issue created."},
+      {t:"Re-add Craig to the mailbox since he asked for it",next:'wrong_restore',pts:0,tag:'bad',fb:"Never override a deliberate access removal — the manager confirmed it was intentional."},
+    ]},
+    re_add_early:{info:"You re-add Craig. 10 minutes later you get an email from his manager: Craig shouldn't have that access — he moved to Marketing last week.",prompt:"You've created a security issue by restoring access without checking.",opts:[
+      {t:"Remove Craig's access and apologise to the manager",next:'resolved',pts:1,tag:'ok',fb:"Correct action now, but should have checked with the manager first. Always verify before restoring permissions."},
+    ]},
+    wrong_restore:{info:"You re-add Craig. His manager emails IT to say Craig should not have sales mailbox access following his role change.",prompt:"You've bypassed an intentional security control.",opts:[
+      {t:"Remove the access and explain the process going forward",next:'resolved',pts:0,tag:'bad',fb:"Always check with management before restoring revoked access. Role changes often come with access changes."},
+    ]},
+    resolved:{resolved:true,summary:"Craig understands his mailbox access was removed as part of his role change. No access change made.",lesson:"Before restoring any revoked permission, always check with a manager whether the removal was intentional. Role changes, HR issues, or security reviews often trigger access removals. Blindly restoring permissions can create serious security vulnerabilities. The right process: check admin logs to see who removed the access, then verify with a manager before taking any action.",tip:"A clear joiner/mover/leaver process prevents this confusion. When someone changes role, IT should be notified in advance so access changes are planned — not discovered by the user when something disappears."}
+  }
+},
+{
+  id:'TKT-009',title:"Our emails are going into customers' spam folders",
+  priority:'high',category:'Microsoft 365',catColor:'#3b82f6',
+  user:'Mark Taylor',role:'Managing Director · Barker & Sons Ltd',
+  time:'11:30 today',hint:"Emails landing in spam are almost always an email authentication problem — check SPF, DKIM, and DMARC records on the domain.",
+  message:"Several clients have called to say our emails are going straight into their junk folder. It's happening with Gmail and Outlook recipients. It's making us look unprofessional and we might be losing business because of it. Can you fix this?",
+  scenes:{
+    start:{prompt:"Company emails going to recipients' spam. Where do you start?",opts:[
+      {t:"Check if the domain has SPF, DKIM, and DMARC records configured",next:'check_dns',pts:3,tag:'good',fb:"Email authentication (SPF/DKIM/DMARC) is the #1 cause of legitimate emails landing in spam."},
+      {t:"Ask which clients and email providers are affected",next:'ask_clients',pts:2,tag:'ok',fb:"Useful scoping, but check the DNS records first — that's almost certainly the issue."},
+      {t:"Check if the domain is on any spam blacklists",next:'check_blacklist',pts:2,tag:'ok',fb:"Worth checking, but missing authentication records is far more common."},
+    ]},
+    check_dns:{info:"You check DNS for barkerandsons.co.uk using MXToolbox: SPF record exists (correct). DKIM: NOT configured. DMARC: NOT configured.",prompt:"SPF is set but DKIM and DMARC are missing. What's the priority?",opts:[
+      {t:"Set up DKIM signing in M365 Admin first, then add DMARC",next:'setup_dkim',pts:3,tag:'good',fb:"DKIM adds a cryptographic signature to emails proving they genuinely came from your server."},
+      {t:"Add a DMARC record to the DNS immediately",next:'setup_dmarc_first',pts:2,tag:'ok',fb:"DMARC tells receiving servers what to do with unauthenticated mail — but DKIM should be configured first."},
+    ]},
+    ask_clients:{info:"Mark confirms it's happening with Gmail and Outlook.com recipients mainly. Corporate Outlook (M365) recipients seem fine.",prompt:"External consumer email providers are stricter about authentication. Check DNS records.",opts:[
+      {t:"Check SPF, DKIM, and DMARC records for the domain",next:'check_dns',pts:3,tag:'good',fb:"Gmail and consumer providers are very strict about authentication — missing DKIM/DMARC is almost certainly the cause."},
+    ]},
+    check_blacklist:{info:"MXToolbox blacklist check: the domain and IP are not on any blacklists. The issue is authentication, not reputation.",prompt:"Not blacklisted. The problem is missing email authentication.",opts:[
+      {t:"Check SPF, DKIM, and DMARC DNS records",next:'check_dns',pts:3,tag:'good',fb:"Authentication records are the fix here."},
+    ]},
+    setup_dkim:{info:"In M365 Admin > Settings > Domains > barkerandsons.co.uk > Email Authentication: you enable DKIM and get two CNAME records to add to DNS. You add them.",prompt:"DKIM is set up. What's next?",opts:[
+      {t:"Add a DMARC TXT record to the DNS",next:'setup_dmarc',pts:3,tag:'good',fb:"DMARC ties SPF and DKIM together and tells receiving servers what to do if checks fail."},
+    ]},
+    setup_dmarc_first:{info:"You add a DMARC record: v=DMARC1; p=none; rua=mailto:postmaster@barkerandsons.co.uk. But without DKIM, DMARC can't properly authenticate emails.",prompt:"DMARC needs DKIM to work properly. Set up DKIM too.",opts:[
+      {t:"Set up DKIM signing in M365 Admin",next:'setup_dkim',pts:2,tag:'ok',fb:"Right — DKIM and DMARC work together. DKIM first, then DMARC."},
+    ]},
+    setup_dmarc:{info:"TXT record added: v=DMARC1; p=quarantine; rua=mailto:postmaster@barkerandsons.co.uk — tells receiving servers to quarantine unauthenticated emails and report back.",prompt:"All three records now in place. What do you tell Mark?",opts:[
+      {t:"Explain it will take 24-48 hours for DNS changes to propagate globally, then monitor",next:'resolved',pts:3,tag:'good',fb:"DNS changes aren't instant — set Mark's expectations correctly."},
+    ]},
+    resolved:{resolved:true,summary:"SPF was already set. DKIM and DMARC have been configured. Emails should stop going to spam within 24-48 hours.",lesson:"Emails going to spam are usually caused by missing email authentication records. SPF (Sender Policy Framework) lists which servers can send email for your domain. DKIM (DomainKeys Identified Mail) adds a cryptographic signature to each email. DMARC (Domain-based Message Authentication) ties them together. All three should be set for every business domain. Missing any of them makes you look like a spammer to modern email providers.",tip:"Use MXToolbox.com to quickly check SPF, DKIM, DMARC, and blacklist status for any domain. Test outbound email deliverability with mail-tester.com — it scores your email out of 10 and tells you exactly what's wrong."}
+  }
+},
+{
+  id:'TKT-010',title:"OneDrive is full — files won't sync",
+  priority:'medium',category:'Microsoft 365',catColor:'#3b82f6',
+  user:'Patricia Nolan',role:'Office Administrator · Barker & Sons Ltd',
+  time:'14:22 today',hint:"Before deleting anything or buying more storage, check WHAT is actually using the space — the answer often surprises people.",
+  message:"I keep getting a pop-up saying my OneDrive is full and now none of my files are syncing to the cloud. I can't save anything new to OneDrive either. Can you sort this out?",
+  scenes:{
+    start:{prompt:"OneDrive storage 100% full. What do you check first?",opts:[
+      {t:"Check what Patricia's storage usage looks like in M365 Admin",next:'check_usage',pts:3,tag:'good',fb:"Check the usage first — you need to know what's full and why before deciding how to fix it."},
+      {t:"Tell Patricia to start deleting files to free space",next:'delete_first',pts:0,tag:'bad',fb:"Never tell someone to delete files without first checking what's there — she might delete something important."},
+      {t:"Upgrade Patricia's OneDrive storage plan",next:'upgrade_first',pts:1,tag:'ok',fb:"Might end up being necessary, but first check why it's full — she may have personal files that shouldn't be there."},
+    ]},
+    check_usage:{info:"M365 Admin > Users > Patricia: OneDrive 1,024 GB of 1,024 GB used. You ask Patricia to check her OneDrive folders — Documents 390 GB, Desktop 340 GB, and a 'Family Photos & Videos' folder: 285 GB.",prompt:"285 GB of personal photos and videos in a work OneDrive account. What do you advise?",opts:[
+      {t:"Explain that OneDrive is for work files and help her move personal files elsewhere",next:'move_personal',pts:3,tag:'good',fb:"Correct — work OneDrive shouldn't store personal files. Help her move them safely before deleting."},
+      {t:"Just delete the personal folder to free space",next:'delete_personal',pts:1,tag:'ok',fb:"Would work, but make sure she has a copy elsewhere first — deleting 285 GB of family photos without a backup is risky."},
+    ]},
+    delete_first:{info:"Patricia starts deleting files but isn't sure what's safe to remove. She accidentally deletes a work folder.",prompt:"Files deleted without checking. You need to recover them from the recycle bin and then approach this properly.",opts:[
+      {t:"Recover the files from OneDrive Recycle Bin and check usage properly first",next:'check_usage',pts:1,tag:'ok',fb:"Recover first, then investigate properly. Always check WHAT is using space before asking users to delete."},
+    ]},
+    upgrade_first:{info:"You increase her quota to 2 TB. She now has 1 TB free. But 285 GB of personal photos are still on the work account.",prompt:"Storage problem solved short-term, but personal content on a work account is still an issue.",opts:[
+      {t:"Check what's using the space and advise on appropriate use of work OneDrive",next:'check_usage',pts:2,tag:'ok',fb:"Right to investigate — upgrading storage doesn't address personal files on work infrastructure."},
+    ]},
+    move_personal:{info:"Patricia copies her family photos to an external drive first, then removes the folder from OneDrive. Free space: 1,024 GB → 738 GB free.",prompt:"Space reclaimed. What do you also set up to prevent this happening again?",opts:[
+      {t:"Explain work OneDrive policy and suggest Google Photos or iCloud for personal photos",next:'resolved',pts:3,tag:'good',fb:"Education prevents recurrence — she didn't realise it was a problem."},
+    ]},
+    delete_personal:{info:"The personal folder is deleted. Space freed. But Patricia says she only had those photos in OneDrive — now they're permanently gone.",prompt:"285 GB of family photos deleted without a backup. This is why you check before deleting.",opts:[
+      {t:"Check the OneDrive Recycle Bin — files stay there for 93 days",next:'resolved',pts:3,tag:'good',fb:"OneDrive recycle bin retains files for 93 days. You recover everything. Lesson learned about backups."},
+    ]},
+    resolved:{resolved:true,summary:"Personal files moved off work OneDrive. 738 GB now free. Patricia understands work OneDrive is for work files only.",lesson:"Before telling anyone to delete files or buying more storage, always check what's using the space. Personal files (especially photos and videos) accidentally synced to work OneDrive is extremely common. Work OneDrive syncs everything in the Desktop, Documents, and Pictures folders by default — which can include personal content. Education is the long-term fix.",tip:"OneDrive Recycle Bin keeps deleted files for 93 days (second-stage recycle bin keeps them a further 93 days). Always check there before concluding files are permanently gone. For clients, consider setting OneDrive storage quotas per user to prevent runaway usage."}
+  }
+},
+{
+  id:'TKT-011',title:"Teams meetings — no audio and camera not working",
+  priority:'medium',category:'Microsoft 365',catColor:'#3b82f6',
+  user:'James Barker',role:'Sales Director · Barker & Sons Ltd',
+  time:'09:05 today',hint:"Teams audio/video issues are almost always device selection or permissions — check which device Teams is set to use before anything else.",
+  message:"I'm in a client meeting in 10 minutes and my Teams isn't working. No one can hear me and my camera isn't showing. This has never happened before. Please help urgently.",
+  scenes:{
+    start:{prompt:"Teams call in 10 minutes. No audio or camera. What's the fastest first check?",opts:[
+      {t:"Check Teams device settings — which mic and camera is it set to use",next:'check_devices',pts:3,tag:'good',fb:"Device selection is the most common Teams AV issue — takes 10 seconds to check."},
+      {t:"Restart Teams completely",next:'restart_teams',pts:2,tag:'ok',fb:"Can help, but check device settings first — a restart doesn't fix a wrong device selection."},
+      {t:"Reinstall Teams",next:'reinstall_teams',pts:0,tag:'bad',fb:"Way too slow for an urgent meeting — and almost never the right fix for AV issues."},
+      {t:"Check Windows device manager for driver issues",next:'device_mgr',pts:1,tag:'ok',fb:"Drivers could cause this, but check Teams settings first — much faster."},
+    ]},
+    check_devices:{info:"Teams Settings > Devices shows: Speaker: Bluetooth headset (disconnected). Microphone: Realtek Audio (no signal). Camera: None selected.",prompt:"Headset is disconnected and no camera selected. Quick fixes?",opts:[
+      {t:"Switch mic/speaker to the laptop's built-in devices and select the camera",next:'switch_devices',pts:3,tag:'good',fb:"Fastest fix for the immediate meeting — built-in devices will work even without the headset."},
+      {t:"Try to reconnect the Bluetooth headset",next:'bt_reconnect',pts:1,tag:'ok',fb:"Could work, but for an urgent call it's faster to just use built-in devices."},
+    ]},
+    restart_teams:{info:"Teams restarts. Still no audio or camera — the device settings issue persists through restarts.",prompt:"Restart didn't help. Check the actual device settings.",opts:[
+      {t:"Check Teams Settings > Devices",next:'check_devices',pts:3,tag:'good',fb:"Should have been the first check — device settings determine which mic/camera Teams uses."},
+    ]},
+    device_mgr:{info:"Device Manager shows the webcam driver is present and working. The issue is inside Teams, not the driver.",prompt:"Driver is fine. Check Teams device settings.",opts:[
+      {t:"Check Teams Settings > Devices for mic/camera selection",next:'check_devices',pts:3,tag:'good',fb:"Teams has its own device selection separate from Windows — always check there first."},
+    ]},
+    reinstall_teams:{info:"Teams reinstallation takes 12 minutes. James missed the first part of his client meeting.",prompt:"Reinstall finished. Teams still shows wrong devices — the issue was device selection, not the software.",opts:[
+      {t:"Check Teams Settings > Devices and set the correct mic and camera",next:'check_devices',pts:1,tag:'ok',fb:"Should have been the very first step. Reinstalling Teams for an AV issue is almost never right."},
+    ]},
+    bt_reconnect:{info:"The Bluetooth headset pairs but Teams still doesn't automatically switch to it.",prompt:"Manually select the headset in Teams device settings.",opts:[
+      {t:"Select the headset in Teams Settings > Devices",next:'switch_devices',pts:2,tag:'ok',fb:"Right — Teams needs to be told to use the device even after pairing."},
+    ]},
+    switch_devices:{info:"You switch Teams to use the laptop built-in mic, speaker, and camera. James tests — everyone can hear him and see him clearly.",prompt:"Meeting is ready. What should you check after the meeting?",opts:[
+      {t:"After the meeting, investigate why his headset disconnected and set up preferred devices properly",next:'resolved',pts:3,tag:'good',fb:"Good — fix the immediate issue, then address the root cause when there's no time pressure."},
+    ]},
+    resolved:{resolved:true,summary:"James made his meeting using built-in laptop audio and camera. Headset issue to be investigated after.",lesson:"Teams AV issues almost always come down to device selection. Teams has its own device settings (Settings > Devices) separate from Windows. Common causes: Bluetooth headset disconnected but still selected, USB hub disconnected, or a Windows update changed the default device. For urgent meetings, always switch to built-in laptop audio/camera first — fix the headset afterwards when there's no time pressure.",tip:"In Teams Admin Centre you can set policies for which devices are available to users. For people who regularly use external headsets, show them how to set a preferred device in Teams settings — it remembers it for future calls."}
+  }
+},
+{
+  id:'TKT-012',title:"Blue screen of death — PC keeps crashing",
+  priority:'high',category:'Windows',catColor:'#8b5cf6',
+  user:'Robert Hughes',role:'Accountant · Barker & Sons Ltd',
+  time:'10:44 today',hint:"The BSOD stop code tells you exactly what category of problem caused the crash. Always read it — don't just restart and hope.",
+  message:"My PC has had a blue screen three times this morning. Each time it crashes and restarts. I've lost work twice already. The screen shows a sad face and some text but it disappears too fast to read. Can you help?",
+  scenes:{
+    start:{prompt:"PC crashing with BSOD multiple times. What's your first step?",opts:[
+      {t:"Find the BSOD stop code from the Windows Event Log or minidump",next:'get_code',pts:3,tag:'good',fb:"The stop code is everything — it tells you exactly what category of problem caused the crash."},
+      {t:"Ask Robert if he installed any new software or updates recently",next:'recent_changes',pts:2,tag:'ok',fb:"Good context, but get the stop code first — it's more specific than asking about recent changes."},
+      {t:"Run a full antivirus scan",next:'av_scan',pts:0,tag:'bad',fb:"BSOD is rarely malware — it's almost always hardware or driver issues. Get the stop code."},
+      {t:"Tell Robert to restart and see if it happens again",next:'restart_wait',pts:1,tag:'ok',fb:"It'll probably happen again. Use that time to check the Event Log for the stop code instead."},
+    ]},
+    get_code:{info:"Event Viewer > Windows Logs > System shows the stop code: DRIVER_IRQL_NOT_LESS_OR_EQUAL with the faulting module: rtux64w10.sys — a Realtek network driver.",prompt:"Driver fault identified: Realtek network adapter driver. What do you do?",opts:[
+      {t:"Update the Realtek network driver from the manufacturer's website",next:'update_driver',pts:3,tag:'good',fb:"Driver crashes need driver updates. Go to the manufacturer's site for the latest version, not Windows Update."},
+      {t:"Roll back the driver to the previous version",next:'rollback_driver',pts:3,tag:'good',fb:"If a recent update caused this, rolling back to the last stable version fixes it immediately."},
+      {t:"Run Windows Update to let it find new drivers",next:'windows_update',pts:1,tag:'ok',fb:"Windows Update often has outdated drivers compared to the manufacturer's site."},
+    ]},
+    recent_changes:{info:"Robert says Windows Update ran over the weekend and installed several updates including a 'network adapter' update.",prompt:"Network driver updated at the weekend — that's likely the culprit. Confirm with Event Log.",opts:[
+      {t:"Check Event Viewer for the exact BSOD stop code",next:'get_code',pts:3,tag:'good',fb:"Weekend update + BSOD = likely a bad driver update. Event Log will confirm the faulting module."},
+    ]},
+    av_scan:{info:"AV scan finds nothing. PC crashes again mid-scan.",prompt:"Not malware. Get the stop code from Event Viewer.",opts:[
+      {t:"Check Event Viewer > Windows Logs > System for the crash details",next:'get_code',pts:2,tag:'ok',fb:"BSOD is driver or hardware — Event Log gives you the exact cause."},
+    ]},
+    restart_wait:{info:"PC crashes again with the same BSOD. Stop code is visible briefly: DRIVER_IRQL_NOT_LESS_OR_EQUAL.",prompt:"Stop code spotted. What does DRIVER_IRQL mean?",opts:[
+      {t:"A driver is accessing memory it shouldn't — check Event Log for the faulting driver file",next:'get_code',pts:3,tag:'good',fb:"Exactly — IRQL errors are always driver-related. Event log names the specific file."},
+    ]},
+    update_driver:{info:"You download the latest Realtek PCIe GBE driver from the Realtek website (newer than what Windows Update had). You install it and restart.",prompt:"Driver updated. Test for stability.",opts:[
+      {t:"Ask Robert to use the PC normally for an hour and report back — also enable automatic crash reporting",next:'resolved',pts:3,tag:'good',fb:"New driver installed. Monitoring is the right approach — you'll know quickly if it was the fix."},
+    ]},
+    rollback_driver:{info:"Device Manager > Network Adapters > Realtek > Driver tab > Roll Back Driver. Previous version restored. Restart.",prompt:"Driver rolled back. Test for stability.",opts:[
+      {t:"Ask Robert to use it normally and report if it crashes again",next:'resolved',pts:3,tag:'good',fb:"Rolling back a driver is often the fastest fix for crash-after-update scenarios."},
+    ]},
+    windows_update:{info:"Windows Update finds a driver but it's the same version that's causing the crash. You need the manufacturer's version.",prompt:"Windows Update doesn't have the fix. Go to the manufacturer.",opts:[
+      {t:"Download the latest Realtek driver directly from Realtek's website",next:'update_driver',pts:2,tag:'ok',fb:"Manufacturer sites always have newer, more stable drivers than Windows Update."},
+    ]},
+    resolved:{resolved:true,summary:"Realtek driver updated/rolled back. PC has been stable for an hour with no further crashes.",lesson:"BSOD stop codes are your best friend — never ignore them. DRIVER_IRQL_NOT_LESS_OR_EQUAL always means a driver is misbehaving. Event Viewer names the exact driver file (e.g. rtux64w10.sys for Realtek). Fix: update or roll back the named driver. Get drivers from the manufacturer's website, not Windows Update — manufacturer versions are usually newer and more stable.",tip:"Windows 10/11 saves minidump files (C:\\Windows\\Minidump) after every BSOD. You can analyse these with WhoCrashed (free) or WinDbg to get the full crash report including the exact faulting driver. Useful for recurring or complex BSOD issues."}
+  }
+},
+{
+  id:'TKT-013',title:"Windows Update has been stuck at 35% for 3 days",
+  priority:'medium',category:'Windows',catColor:'#8b5cf6',
+  user:'Lynn Patterson',role:'HR Assistant · Barker & Sons Ltd',
+  time:'09:18 today',hint:"Windows Update stuck mid-install usually means corrupted update components. The Windows Update Troubleshooter and clearing the SoftwareDistribution folder fix most cases.",
+  message:"My PC has had a Windows Update stuck at 35% downloading for 3 days now. I've tried restarting but it just comes back to 35%. My PC is really slow because of it and I'm worried it'll break something.",
+  scenes:{
+    start:{prompt:"Update stuck at 35% for 3 days. What do you try first?",opts:[
+      {t:"Run the Windows Update Troubleshooter",next:'troubleshooter',pts:3,tag:'good',fb:"Built-in troubleshooter fixes most stuck update issues — fast and non-destructive."},
+      {t:"Stop the Windows Update service and clear the SoftwareDistribution folder",next:'clear_cache',pts:3,tag:'good',fb:"Clearing the update cache forces Windows to re-download updates fresh — very effective."},
+      {t:"Roll back the update using System Restore",next:'system_restore',pts:0,tag:'bad',fb:"System Restore undoes the update attempt but doesn't fix the underlying update mechanism."},
+      {t:"Reset the PC to factory settings",next:'factory_reset',pts:0,tag:'bad',fb:"Completely disproportionate — a stuck update is a common and fixable issue."},
+    ]},
+    troubleshooter:{info:"Settings > Update & Security > Troubleshoot > Windows Update > Run. It finds and resets the Windows Update components. Takes 3 minutes.",prompt:"Troubleshooter completed. What now?",opts:[
+      {t:"Restart the PC and check if Windows Update works now",next:'test_update',pts:3,tag:'good',fb:"Restart lets the changes take effect — then test if updates download properly."},
+    ]},
+    clear_cache:{info:"You stop the Windows Update service (services.msc), rename C:\\Windows\\SoftwareDistribution to SoftwareDistribution.old, and restart the service. Windows rebuilds the folder fresh.",prompt:"Cache cleared. What next?",opts:[
+      {t:"Restart and run Windows Update again",next:'test_update',pts:3,tag:'good',fb:"Clean cache + restart = Windows downloads the update fresh. Usually resolves it."},
+    ]},
+    system_restore:{info:"System Restore rolls back to before the update attempt. But the underlying update service is still broken — the same issue will happen when it tries to update again.",prompt:"Restore completed but the root cause isn't fixed. Use the proper fix.",opts:[
+      {t:"Run the Windows Update Troubleshooter or clear the SoftwareDistribution cache",next:'troubleshooter',pts:1,tag:'ok',fb:"Right approach — should have done this first."},
+    ]},
+    factory_reset:{info:"Lynn loses her applications and settings. The update issue is fixed but you've caused significant disruption for a simple stuck update.",prompt:"PC reset — overkill for a stuck update. Remember this for next time.",opts:[
+      {t:"Restore Lynn's applications and settings",next:'resolved',pts:0,tag:'bad',fb:"A factory reset for a stuck Windows Update is like demolishing a house because a door is stuck."},
+    ]},
+    test_update:{info:"Windows Update now shows it's downloading normally — progress is moving. The 35% stuck issue is gone.",prompt:"Update is downloading. What do you check while it runs?",opts:[
+      {t:"Confirm disk space is sufficient for the update to complete",next:'resolved',pts:3,tag:'good',fb:"Updates need free disk space. Confirming this now prevents a second failure mid-download."},
+    ]},
+    resolved:{resolved:true,summary:"Windows Update is downloading normally. SoftwareDistribution cache was corrupt — clearing it fixed the issue.",lesson:"Windows Update getting stuck is usually a corrupt update cache, not a fundamental problem. Fix in order: 1) Run Windows Update Troubleshooter (Settings > Troubleshoot). 2) If that fails: stop the wuauserv service, rename SoftwareDistribution folder, restart the service. 3) Restart PC and retry. Factory reset is never appropriate for a stuck update.",tip:"The command-line version: 'net stop wuauserv' then 'ren C:\\Windows\\SoftwareDistribution SoftwareDistribution.old' then 'net start wuauserv'. Faster than going through the GUI. Also useful: 'sfc /scannow' checks for and repairs corrupt Windows system files."}
+  }
+},
+{
+  id:'TKT-014',title:"Accidentally deleted an entire project folder",
+  priority:'high',category:'Windows',catColor:'#8b5cf6',
+  user:'Fiona Douglas',role:'Project Manager · Barker & Sons Ltd',
+  time:'15:51 today',hint:"Don't let the user keep using the PC after a deletion — the more they use it, the harder file recovery becomes. Act fast.",
+  message:"I've made a terrible mistake. I accidentally deleted a whole folder with 3 months of project files in it. I emptied the Recycle Bin as well before I realised. The deadline for this project is tomorrow. Please help!",
+  scenes:{
+    start:{prompt:"Folder deleted AND Recycle Bin emptied. Urgent. What do you do first?",opts:[
+      {t:"Tell Fiona to stop using the PC immediately — every action reduces recovery chances",next:'stop_pc',pts:3,tag:'good',fb:"Critical first step — writing new data to disk overwrites deleted files. The PC must stop now."},
+      {t:"Check if the folder was in OneDrive and look in the online Recycle Bin",next:'check_onedrive',pts:3,tag:'good',fb:"If she uses OneDrive sync, the cloud version may still have it — check this immediately."},
+      {t:"Run a file recovery program on the PC",next:'recovery_tool',pts:1,tag:'ok',fb:"Right tool eventually, but first check cloud backups — faster and more reliable than disk recovery."},
+    ]},
+    stop_pc:{info:"Fiona stops using the PC immediately.",prompt:"PC stopped. What's the fastest route to recovery?",opts:[
+      {t:"Check OneDrive online recycle bin — if the folder was synced, it's recoverable",next:'check_onedrive',pts:3,tag:'good',fb:"OneDrive's online recycle bin keeps deleted files for 93 days regardless of local deletion."},
+      {t:"Check if IT has a backup of her documents",next:'check_backup',pts:3,tag:'good',fb:"If there's a Veeam or cloud backup running, last night's backup would have the folder."},
+    ]},
+    check_onedrive:{info:"You go to onedrive.com > Recycle Bin. The deleted folder is there with all contents — 847 files, fully intact. Deleted 22 minutes ago.",prompt:"All files are in the OneDrive online recycle bin. What do you do?",opts:[
+      {t:"Select all and click Restore — files go back to their original location",next:'resolved',pts:3,tag:'good',fb:"OneDrive recycle bin saves the day. All 847 files restored in 2 minutes."},
+    ]},
+    check_backup:{info:"You check the Veeam backup logs. Fiona's workstation was backed up at 11:30pm last night. Yesterday's version of the project folder is available.",prompt:"Backup from last night exists. What do you restore?",opts:[
+      {t:"Restore just the deleted folder from last night's backup",next:'resolved',pts:3,tag:'good',fb:"Granular restore means you only bring back what's needed — not the entire PC."},
+    ]},
+    recovery_tool:{info:"You run Recuva on the drive. It finds some of the deleted files but not all — 23% are partially overwritten and corrupt. The rest are recovered.",prompt:"Partial recovery via disk tool. How could you have got everything back?",opts:[
+      {t:"Check OneDrive online recycle bin and Veeam backups for full recovery",next:'check_onedrive',pts:2,tag:'ok',fb:"Should have checked cloud/backup first — always faster and more complete than disk recovery tools."},
+    ]},
+    resolved:{resolved:true,summary:"All 847 project files restored from OneDrive online recycle bin. Deadline is safe.",lesson:"When files are deleted, act in this order: 1) Stop the user using the PC immediately. 2) Check OneDrive/SharePoint online recycle bin (keeps files 93 days). 3) Check cloud or Veeam backups. 4) Only then use disk recovery tools like Recuva. Cloud backups are far more reliable than disk recovery — which only works if the space hasn't been overwritten.",tip:"OneDrive and SharePoint also have Version History on individual files — you can restore any previous version of a document even if the file still exists. Right-click > Version History. Critical for accidental overwrites where the file wasn't deleted but the content was changed."}
+  }
+},
+{
+  id:'TKT-015',title:"PC covered in pop-up ads and browser redirects",
+  priority:'medium',category:'Windows',catColor:'#8b5cf6',
+  user:'Gary Simmons',role:'Sales Representative · Barker & Sons Ltd',
+  time:'13:10 today',hint:"Pop-up ads and browser redirects are almost always adware — a different category from viruses. Anti-malware tools like Malwarebytes catch what antivirus misses.",
+  message:"My browser keeps opening pop-up ads even when I'm not on a website. Sometimes it redirects me to random sites. I've run the antivirus and it found nothing. It's happening in Chrome and Edge.",
+  scenes:{
+    start:{prompt:"Pop-ups in multiple browsers, antivirus found nothing. What's your approach?",opts:[
+      {t:"Run Malwarebytes Free — it catches adware that standard AV misses",next:'run_malwarebytes',pts:3,tag:'good',fb:"Adware is different from traditional viruses. Malwarebytes specialises in exactly this type of infection."},
+      {t:"Check browser extensions in Chrome and Edge for unknown add-ons",next:'check_extensions',pts:3,tag:'good',fb:"Adware often installs itself as a browser extension — easy to spot and remove."},
+      {t:"Uninstall and reinstall Chrome",next:'reinstall_chrome',pts:1,tag:'ok',fb:"Could help, but if it's a system-level infection or in Edge too, reinstalling Chrome alone won't fix it."},
+    ]},
+    run_malwarebytes:{info:"Malwarebytes scan finds: 6 adware threats, 2 PUPs (potentially unwanted programs), and a rogue browser extension injector. All quarantined and removed.",prompt:"Malwarebytes cleaned the infection. What do you check next?",opts:[
+      {t:"Check browser extensions and reset browser settings to default",next:'check_extensions',pts:3,tag:'good',fb:"Malwarebytes removes the underlying infection but browser extensions and settings may still be affected."},
+    ]},
+    check_extensions:{info:"Chrome Extensions: 3 unknown extensions including 'PDFMagic' and 'ShopSaver Pro' that Gary never installed. Edge has similar. These are the adware.",prompt:"Rogue extensions found. What do you do?",opts:[
+      {t:"Remove all unrecognised extensions and reset browser homepage and search engine",next:'remove_ext',pts:3,tag:'good',fb:"Removing the extensions stops the pop-ups. Resetting settings clears any homepage or search hijacking."},
+    ]},
+    reinstall_chrome:{info:"Chrome reinstalled. Pop-ups still appear in Edge — the infection is system-level, not just Chrome.",prompt:"System-level infection. Need a proper anti-malware scan.",opts:[
+      {t:"Run Malwarebytes to find the underlying adware",next:'run_malwarebytes',pts:2,tag:'ok',fb:"Should have tried Malwarebytes first — handles both the adware and any Chrome/Edge infections."},
+    ]},
+    remove_ext:{info:"Extensions removed. Browser homepage and search engine reset to Google. Pop-ups stop immediately.",prompt:"Pop-ups gone. How did Gary get infected?",opts:[
+      {t:"Ask Gary about recent software installs — adware piggybacks on free software downloads",next:'resolved',pts:3,tag:'good',fb:"Education prevents reinfection — adware almost always comes from unchecked software installations."},
+    ]},
+    resolved:{resolved:true,summary:"Adware removed via Malwarebytes. Rogue browser extensions deleted. Browser settings reset. No more pop-ups.",lesson:"Pop-up ads and browser redirects are adware — a specific type of malware that standard antivirus often misses. Malwarebytes Free is the go-to tool for adware removal. Also check browser extensions in every browser — adware typically installs itself as an extension. Adware almost always arrives bundled with free software from unofficial sites (download managers, free PDF converters, game cracks).",tip:"When installing free software, always choose 'Custom' or 'Advanced' install — never 'Express' — and uncheck any third-party offers. Teach users to only download software from official vendor websites. Malwarebytes can run alongside any antivirus as a second-opinion scanner."}
+  }
+},
+{
+  id:'TKT-016',title:"Can't install software — access denied error",
+  priority:'low',category:'Windows',catColor:'#8b5cf6',
+  user:'Hannah Clarke',role:'Marketing Executive · Barker & Sons Ltd',
+  time:'11:00 today',hint:"Standard user accounts can't install software — this is intentional security policy. The question is whether the install is legitimate and approved.",
+  message:"I need to install Adobe Premiere Pro for a project but when I try it says 'Access Denied — you need administrator permission to install this'. My manager has approved it. Can you help?",
+  scenes:{
+    start:{prompt:"User needs to install approved software but lacks admin rights. What's the right process?",opts:[
+      {t:"Verify the manager's approval, then remotely install it using admin credentials",next:'verify_approval',pts:3,tag:'good',fb:"Correct process — verify approval then install with admin rights. Don't give Hannah admin access."},
+      {t:"Give Hannah temporary admin rights so she can install it herself",next:'give_admin',pts:0,tag:'bad',fb:"Never give standard users admin rights — even temporarily. This is a major security risk."},
+      {t:"Install it remotely right now without checking approval",next:'no_check',pts:0,tag:'bad',fb:"Always verify approval before installing software. You need a paper trail and to confirm the license."},
+    ]},
+    verify_approval:{info:"You email Hannah's manager, Mark. He confirms the approval and says the company has an Adobe Creative Cloud licence with available seats.",prompt:"Approval confirmed and licence available. What do you do?",opts:[
+      {t:"Remote in using admin credentials and install Adobe Premiere Pro",next:'install_admin',pts:3,tag:'good',fb:"Right approach — admin installs software, user doesn't get admin rights."},
+    ]},
+    give_admin:{info:"You add Hannah to the local Administrators group temporarily. She installs Premiere Pro but then accidentally installs 3 other programmes and changes some system settings.",prompt:"Temporary admin always causes unintended consequences. Remove her admin rights now.",opts:[
+      {t:"Remove Hannah from Administrators and leave only the approved software",next:'resolved',pts:0,tag:'bad',fb:"Lesson learned — never give users admin rights, even briefly. Always install yourself with your own admin credentials."},
+    ]},
+    no_check:{info:"You install Adobe Premiere Pro. Later you discover the company's Adobe licence was at maximum seats and you've caused a licensing violation.",prompt:"Installing without checking licences caused a compliance issue.",opts:[
+      {t:"Check the licence status and resolve the overage",next:'resolved',pts:0,tag:'bad',fb:"Always check licence availability before installing commercial software. Licence violations can have legal consequences."},
+    ]},
+    install_admin:{info:"You remote in, use admin credentials to run the installer, and Premiere Pro installs successfully. Hannah can open it immediately.",prompt:"Software installed. Document it?",opts:[
+      {t:"Log the install in the asset register and note the licence seat used",next:'resolved',pts:3,tag:'good',fb:"Good asset management — you always need to know what's installed where and which licence seats are in use."},
+    ]},
+    resolved:{resolved:true,summary:"Adobe Premiere Pro installed by IT with admin credentials. Manager approval confirmed. Licence seat logged.",lesson:"Standard user accounts cannot and should not install software — this is intentional. The correct process: 1) Verify manager approval (written/email). 2) Check licence availability. 3) IT installs using admin credentials remotely. 4) Log the install. Never give users admin rights to install software themselves — even temporarily. Temporary admin almost always leads to unwanted software, changed settings, or security issues.",tip:"Group Policy can be used to deploy approved software automatically to specified machines without any user involvement. Tools like PDQ Deploy or Microsoft Intune/Endpoint Manager make this scalable — you can push software to 100 PCs with one click."}
+  }
+},
+{
+  id:'TKT-017',title:"Second monitor not being detected",
+  priority:'low',category:'Hardware',catColor:'#10b981',
+  user:'Stuart Bell',role:'Graphic Designer · Barker & Sons Ltd',
+  time:'09:30 today',hint:"Monitor not detected is almost always a physical connection issue — check cables and ports before touching any settings.",
+  message:"I've plugged in a second monitor but my PC isn't detecting it at all. The monitor just shows 'No Signal'. I need dual monitors for my design work. I've tried restarting already.",
+  scenes:{
+    start:{prompt:"Second monitor showing 'No Signal'. Where do you start?",opts:[
+      {t:"Check the physical cable connection at both the monitor and PC end",next:'check_cable',pts:3,tag:'good',fb:"No Signal almost always means a physical connection issue — check cable before touching settings."},
+      {t:"Right-click desktop > Display settings and check if the monitor appears",next:'display_settings',pts:2,tag:'ok',fb:"Reasonable, but if the cable isn't properly connected Windows can't detect it anyway."},
+      {t:"Update the graphics driver",next:'update_gpu',pts:0,tag:'bad',fb:"Driver updates are rarely needed for monitor detection — check the physical connection first."},
+    ]},
+    check_cable:{info:"Stuart checks the DisplayPort cable — it was only pushed in halfway at the monitor end. He pushes it in until it clicks.",prompt:"Cable properly seated. What now?",opts:[
+      {t:"The monitor should detect automatically — give it 5 seconds",next:'resolved',pts:3,tag:'good',fb:"DisplayPort and HDMI auto-detect when properly connected. No settings change needed."},
+    ]},
+    display_settings:{info:"Display Settings shows only one monitor. Windows can't detect the second one — because the cable isn't fully connected.",prompt:"Windows can't see it because of a physical connection issue. Check the cable.",opts:[
+      {t:"Check the cable connection at both ends",next:'check_cable',pts:3,tag:'good',fb:"If Windows can't detect it, the issue is hardware/cable, not settings."},
+    ]},
+    update_gpu:{info:"Graphics driver updated. Monitor still shows No Signal — because the cable was never properly connected.",prompt:"Driver update didn't help. Check the physical connection.",opts:[
+      {t:"Check the cable connection at both the PC and monitor",next:'check_cable',pts:2,tag:'ok',fb:"Should have been the first check. Physical before software, always."},
+    ]},
+    resolved:{resolved:true,summary:"DisplayPort cable fully seated. Second monitor detected and working immediately.",lesson:"'No Signal' on a monitor almost always means the cable isn't properly connected, the wrong input is selected on the monitor, or the cable/port is faulty. Check in this order: 1) Cable seated firmly at both ends. 2) Correct input selected on the monitor (HDMI 1, DisplayPort, etc). 3) Try a different cable. 4) Try a different port on the PC. Software/driver fixes come last.",tip:"If the cable is fine but the monitor still isn't detected: right-click Desktop > Display Settings > scroll down > Detect. This forces Windows to scan for connected displays. Also check the monitor's own input selector — many monitors default to HDMI 1 but the PC is plugged into DisplayPort."}
+  }
+},
+{
+  id:'TKT-018',title:"Laptop battery only lasts 45 minutes",
+  priority:'medium',category:'Hardware',catColor:'#10b981',
+  user:'Rebecca Shaw',role:'Field Sales Manager · Barker & Sons Ltd',
+  time:'10:15 today',hint:"Check the battery's actual capacity vs its design capacity first — a degraded battery needs replacing, not just tweaking settings.",
+  message:"My work laptop battery is terrible — it only lasts about 45 minutes now when it used to last all day. I need to work away from the office and I can't always find a socket. The laptop is about 3 years old.",
+  scenes:{
+    start:{prompt:"Laptop battery dropped from all-day to 45 minutes. What do you check first?",opts:[
+      {t:"Generate a battery health report to see actual vs design capacity",next:'battery_report',pts:3,tag:'good',fb:"The battery report tells you if the battery is degraded beyond usefulness — takes 30 seconds to generate."},
+      {t:"Change the Windows power plan to Battery Saver",next:'power_plan',pts:1,tag:'ok',fb:"Power plan helps but won't fix a physically degraded battery — check health first."},
+      {t:"Check what apps are running and using power",next:'task_mgr',pts:2,tag:'ok',fb:"Background apps can drain battery, but on a 3-year-old laptop the battery itself is most likely degraded."},
+    ]},
+    battery_report:{info:"You run: powercfg /batteryreport in CMD. Report shows: Design capacity 72,000 mWh. Full charge capacity: 18,400 mWh. The battery is at 25.5% of its original capacity.",prompt:"Battery is at 25% capacity — severely degraded. What do you recommend?",opts:[
+      {t:"Recommend a battery replacement — the hardware is worn out",next:'recommend_replace',pts:3,tag:'good',fb:"At 25% capacity, no software fix will help. The battery needs replacing."},
+      {t:"Calibrate the battery by fully draining and recharging",next:'calibrate',pts:0,tag:'bad',fb:"Calibration is a myth for modern lithium batteries — it doesn't restore capacity, only helps the percentage display be more accurate."},
+    ]},
+    power_plan:{info:"Power Saver mode extends runtime slightly but Rebecca is now at 55 minutes. Still not acceptable for field work.",prompt:"Power plan helps but doesn't fix the underlying issue. What's the real problem?",opts:[
+      {t:"Generate a battery health report to check actual capacity",next:'battery_report',pts:3,tag:'good',fb:"Should have checked this first. 3-year-old laptop + short battery life = degraded battery."},
+    ]},
+    task_mgr:{info:"Task Manager > Power Usage shows nothing abnormal. The battery is just physically worn out after 3 years of charge cycles.",prompt:"No rogue processes. Battery is physically degraded.",opts:[
+      {t:"Generate a battery health report to confirm and quantify the degradation",next:'battery_report',pts:3,tag:'good',fb:"Battery report will show exactly how much capacity has been lost."},
+    ]},
+    calibrate:{info:"You fully drain and recharge the battery. Capacity is still 18,400 mWh — calibration doesn't restore worn lithium cells.",prompt:"Calibration is a myth for lithium batteries. The hardware needs replacing.",opts:[
+      {t:"Recommend a replacement battery",next:'recommend_replace',pts:2,tag:'ok',fb:"Correct conclusion, just took an unnecessary detour."},
+    ]},
+    recommend_replace:{info:"You contact the laptop manufacturer. A replacement battery is £85. Fitting takes 20 minutes. Alternatively a new budget laptop would be £350.",prompt:"Present the options to Rebecca's manager.",opts:[
+      {t:"Present both options — battery replacement vs new laptop — with costs and recommendation",next:'resolved',pts:3,tag:'good',fb:"Always present options with costs. Manager decides based on budget and the laptop's age/spec."},
+    ]},
+    resolved:{resolved:true,summary:"Battery report generated, degradation confirmed. Options presented to manager: replace battery (£85) or new laptop (£350).",lesson:"A laptop battery lasting a fraction of its original time is almost always physical degradation — lithium batteries degrade over charge cycles and age. Run 'powercfg /batteryreport' in CMD to see design capacity vs current full charge capacity. Under 50% means replacement is needed. No software fix restores lost battery capacity.",tip:"'powercfg /batteryreport' generates an HTML report saved to C:\\Users\\[user]\\battery-report.html. It shows capacity history over time and an estimate of remaining runtime. Run this proactively on laptops over 2 years old before users start complaining about battery life."}
+  }
+},
+{
+  id:'TKT-019',title:"Several keyboard keys have stopped working",
+  priority:'medium',category:'Hardware',catColor:'#10b981',
+  user:'Neil Foster',role:'Data Entry Clerk · Barker & Sons Ltd',
+  time:'14:00 today',hint:"For a data entry clerk, a broken keyboard is business-critical. Get them working first with a USB keyboard, then investigate the cause.",
+  message:"The letters E, R, and T on my keyboard have completely stopped working. A few other keys are also intermittent. I do data entry so I can't work without a proper keyboard. This started after I spilled a small amount of coffee on it yesterday.",
+  scenes:{
+    start:{prompt:"Keys not working after liquid spill. Neil can't work. What's first priority?",opts:[
+      {t:"Get Neil a USB keyboard immediately so he can keep working",next:'usb_keyboard',pts:3,tag:'good',fb:"Get the user working first — a data entry clerk with no keyboard is completely stopped. Deal with the broken one after."},
+      {t:"Try to dry out the keyboard with compressed air",next:'dry_keyboard',pts:2,tag:'ok',fb:"Worth trying, but Neil needs to work now — get him a USB keyboard first."},
+      {t:"Reinstall the keyboard driver",next:'driver',pts:0,tag:'bad',fb:"A liquid spill is a hardware problem — reinstalling drivers won't fix corroded contacts."},
+    ]},
+    usb_keyboard:{info:"You grab a spare USB keyboard from the stock room. Neil plugs it in — Windows detects it immediately and he's back to work.",prompt:"Neil is working again. What about the damaged laptop keyboard?",opts:[
+      {t:"Inspect the laptop keyboard and assess if it can be cleaned or needs replacing",next:'inspect',pts:3,tag:'good',fb:"Now that Neil is working, you can properly assess the damage without time pressure."},
+    ]},
+    dry_keyboard:{info:"You use compressed air on the keyboard. The keys are still intermittent — liquid damage to keyboard contacts doesn't dry out reliably.",prompt:"Neil still can't work reliably. Quickest way to get him productive?",opts:[
+      {t:"Get Neil a USB keyboard to use while you assess the laptop keyboard",next:'usb_keyboard',pts:3,tag:'good',fb:"User productivity first — USB keyboard buys time to properly assess and fix the main keyboard."},
+    ]},
+    driver:{info:"Driver reinstalled. Keys still not working — because the circuit board contacts under the affected keys are corroded from the liquid.",prompt:"Software can't fix hardware damage. What now?",opts:[
+      {t:"Get Neil a USB keyboard and assess the physical keyboard damage",next:'usb_keyboard',pts:2,tag:'ok',fb:"Should have started here — liquid damage is hardware, not software."},
+    ]},
+    inspect:{info:"You inspect the keyboard. Keys E, R, T and surrounding area have visible liquid residue. The keyboard membrane is likely damaged.",prompt:"Liquid damage to keyboard membrane. Options?",opts:[
+      {t:"Quote a keyboard replacement — laptop keyboard swap is typically £40-80 in parts",next:'resolved',pts:3,tag:'good',fb:"Keyboard replacement is the right call for liquid-damaged membrane keyboards."},
+    ]},
+    resolved:{resolved:true,summary:"Neil is working on a USB keyboard. Laptop keyboard assessed — membrane damaged by coffee, replacement quoted at £65.",lesson:"Liquid spills on keyboards almost always cause permanent damage to the membrane or circuit board contacts — especially if the liquid had sugar (like coffee). Priority: get the user working immediately with a USB keyboard, then assess damage. Don't waste time on software fixes (drivers, reinstalls) for liquid damage — it's hardware. Replacement keyboards for laptops are relatively cheap and quick to swap.",tip:"If a keyboard gets wet and you catch it immediately: power off and turn upside down to drain. Leave to dry for 48+ hours before powering on. Don't use a hair dryer — heat can damage components. For sugary drinks, isopropyl alcohol (IPA) on a cotton bud can clean contacts if done carefully."}
+  }
+},
+{
+  id:'TKT-020',title:"USB devices not being recognised",
+  priority:'medium',category:'Hardware',catColor:'#10b981',
+  user:'Alan Myers',role:'Finance Manager · Barker & Sons Ltd',
+  time:'11:45 today',hint:"Try the USB device in different ports and on a different PC first — this tells you immediately whether it's the device or the computer.",
+  message:"My USB mouse stopped working this morning and now I notice my USB memory stick isn't being detected either. The keyboard (also USB) is still working though. I've tried restarting.",
+  scenes:{
+    start:{prompt:"Two USB devices not working, one is. What do you check first?",opts:[
+      {t:"Test the failing USB devices in different ports on the same PC",next:'diff_ports',pts:3,tag:'good',fb:"Different ports eliminates whether it's a specific port issue versus a system-wide problem."},
+      {t:"Test the devices on a different PC",next:'diff_pc',pts:3,tag:'good',fb:"Testing on another PC immediately tells you if it's the devices or the computer."},
+      {t:"Check Device Manager for USB errors",next:'device_mgr',pts:2,tag:'ok',fb:"Good diagnostic step, but test physically first — faster and more definitive."},
+      {t:"Reinstall USB drivers",next:'reinstall_drivers',pts:1,tag:'ok',fb:"Could help, but test the hardware first to understand the scope of the issue."},
+    ]},
+    diff_ports:{info:"Alan tries the mouse in three other USB ports — still not detected. Tries the USB stick — also not detected in those ports. The keyboard (working) is in a USB 3 port.",prompt:"Multiple ports not working. But keyboard works in one port. Pattern?",opts:[
+      {t:"Check Device Manager — the non-working ports may show errors",next:'device_mgr',pts:3,tag:'good',fb:"Selective port failure points to a USB controller issue — Device Manager will show if a controller has failed."},
+    ]},
+    diff_pc:{info:"Alan tests both the mouse and USB stick on a colleague's PC — both work perfectly. The issue is with Alan's PC, not the devices.",prompt:"Devices are fine — it's the PC. What do you check?",opts:[
+      {t:"Check Device Manager for USB controller errors",next:'device_mgr',pts:3,tag:'good',fb:"Device Manager will show which USB controllers are having issues."},
+    ]},
+    device_mgr:{info:"Device Manager > Universal Serial Bus controllers: 'USB 2.0 Hub' shows a yellow warning icon. Error: 'This device has encountered a problem (Code 43)'.",prompt:"USB 2.0 Hub controller failure. What's the fix?",opts:[
+      {t:"Update the USB controller driver, then restart",next:'update_usb',pts:3,tag:'good',fb:"Code 43 often resolves with a driver update and restart — the controller gets reset."},
+    ]},
+    reinstall_drivers:{info:"USB drivers reinstalled. Still getting Code 43 on the USB 2.0 Hub controller.",prompt:"Driver reinstall didn't fix it. Check what Device Manager says more carefully.",opts:[
+      {t:"Look at Device Manager for the specific error on the USB controller",next:'device_mgr',pts:2,tag:'ok',fb:"Device Manager gives you the specific error code which guides the fix."},
+    ]},
+    update_usb:{info:"USB controller driver updated and PC restarted. The Code 43 error is gone. The mouse and USB stick both detect immediately.",prompt:"Issue resolved. Why did the keyboard continue working?",opts:[
+      {t:"The keyboard was in a USB 3 controller (different chip) — only the USB 2 controller failed",next:'resolved',pts:3,tag:'good',fb:"USB 2.0 and USB 3.0 ports use different controllers — one failing doesn't affect the other."},
+    ]},
+    resolved:{resolved:true,summary:"USB 2.0 controller driver updated. Mouse and USB stick both working. Keyboard was unaffected as it used a different controller.",lesson:"When some USB ports work but others don't, it's usually a USB controller issue — not the devices. Device Manager Code 43 on a USB Hub means the controller has failed or its driver is corrupt. Fix: update the driver and restart. Test devices on another PC first to rule out faulty devices. USB 2.0 and 3.0 ports often use separate controllers, which is why some ports can fail while others work.",tip:"If a USB controller driver update doesn't fix Code 43, try uninstalling the device from Device Manager and restarting — Windows will reinstall it fresh. If still failing after that, it may be a hardware fault requiring board-level repair or a USB hub as a workaround."}
+  }
+},
+{
+  id:'TKT-021',title:"Wi-Fi disconnects every 15-20 minutes",
+  priority:'medium',category:'Networking',catColor:'#f59e0b',
+  user:'Claire Watts',role:'Remote Worker · Barker & Sons Ltd',
+  time:'10:00 today',hint:"Intermittent Wi-Fi that drops on a schedule is almost always power management settings putting the adapter to sleep — check that before assuming router or ISP issues.",
+  message:"My Wi-Fi keeps disconnecting roughly every 15-20 minutes and then reconnecting after about 30 seconds. It's happening on my home broadband. My phone has no issues on the same Wi-Fi. It's making video calls impossible.",
+  scenes:{
+    start:{prompt:"Scheduled Wi-Fi drops on one device. Phone is fine. What do you check?",opts:[
+      {t:"Check if Windows power management is turning off the Wi-Fi adapter to save power",next:'power_mgmt',pts:3,tag:'good',fb:"Periodic disconnections on a schedule, fine on other devices — classic Windows power management putting the adapter to sleep."},
+      {t:"Tell Claire to restart her router",next:'restart_router',pts:1,tag:'ok',fb:"Router restart rarely helps when only one device is affected and the pattern is consistent."},
+      {t:"Check if the Wi-Fi driver needs updating",next:'wifi_driver',pts:2,tag:'ok',fb:"Worth checking, but power management is more likely given the regular schedule."},
+    ]},
+    power_mgmt:{info:"Device Manager > Network Adapters > Wi-Fi adapter > Properties > Power Management tab: 'Allow the computer to turn off this device to save power' is TICKED.",prompt:"Found it — Windows is powering down the adapter on a schedule. Fix?",opts:[
+      {t:"Untick 'Allow the computer to turn off this device to save power' and click OK",next:'resolved',pts:3,tag:'good',fb:"One checkbox. This is the fix for probably 80% of scheduled Wi-Fi dropout issues on Windows laptops."},
+    ]},
+    restart_router:{info:"Router restarted. Wi-Fi drops again exactly 18 minutes later. Pattern unchanged — the router isn't the problem.",prompt:"Router is fine. The issue is on Claire's laptop specifically.",opts:[
+      {t:"Check Windows power management settings for the Wi-Fi adapter",next:'power_mgmt',pts:3,tag:'good',fb:"Regular interval drops on one device = power management. Should have been the first check."},
+    ]},
+    wifi_driver:{info:"Wi-Fi driver is up to date. Disconnections continue every 18 minutes.",prompt:"Driver is fine. Check power management — it causes exactly this pattern.",opts:[
+      {t:"Check Wi-Fi adapter power management settings in Device Manager",next:'power_mgmt',pts:3,tag:'good',fb:"Regular drops on a schedule = power management turning off the adapter. Classic Windows behaviour."},
+    ]},
+    resolved:{resolved:true,summary:"Wi-Fi adapter power management disabled. No disconnections in the hour since the change.",lesson:"Wi-Fi disconnecting on a regular schedule (every 10-30 minutes) on one device while others are fine is almost always Windows power management. Device Manager > Network Adapters > [Wi-Fi adapter] > Properties > Power Management > untick 'Allow the computer to turn off this device to save power'. This is a one-click fix that resolves the vast majority of scheduled Wi-Fi dropout cases.",tip:"You can also set this via Power Options > Change plan settings > Change advanced power settings > Wireless Adapter Settings > Power Saving Mode > set to Maximum Performance. Consider checking this setting by default on any laptop being used for video calls — it's a very common support call."}
+  }
+},
+{
+  id:'TKT-022',title:"Internet very slow on one PC — others are fine",
+  priority:'medium',category:'Networking',catColor:'#f59e0b',
+  user:'Simon Grant',role:'Accountant · Barker & Sons Ltd',
+  time:'14:30 today',hint:"When one device is slow but all others are fine, the problem is always in the device itself — not the router or ISP.",
+  message:"My internet is incredibly slow — pages take 20-30 seconds to load and Teams calls keep buffering. But my colleagues sitting next to me say their internet is fine. I've tried restarting my PC.",
+  scenes:{
+    start:{prompt:"One PC slow, others fine, same network. Where's the problem?",opts:[
+      {t:"Run a speed test on Simon's PC vs a working colleague's PC for comparison",next:'speed_test',pts:3,tag:'good',fb:"Comparing speed tests immediately quantifies the problem and confirms it's device-specific."},
+      {t:"Check if Simon is connected to the right Wi-Fi network",next:'check_wifi',pts:3,tag:'good',fb:"Connecting to the wrong network (wrong band, guest network) is a common and easily missed cause."},
+      {t:"Ask IT to restart the office router",next:'restart_router',pts:0,tag:'bad',fb:"If only one device is affected, the router isn't the problem — restarting it won't help Simon."},
+    ]},
+    speed_test:{info:"Simon's PC: 2 Mbps down / 0.8 Mbps up. Colleague's PC: 94 Mbps down / 45 Mbps up. Same Wi-Fi network, same office.",prompt:"2 vs 94 Mbps confirms it's Simon's PC. What could cause this on just one device?",opts:[
+      {t:"Check which Wi-Fi band Simon is connected to — he may be on 2.4GHz instead of 5GHz",next:'check_band',pts:3,tag:'good',fb:"2.4GHz is much slower and more congested than 5GHz — being on the wrong band explains the difference."},
+      {t:"Check if there's something using the network bandwidth on Simon's PC",next:'check_usage',pts:2,tag:'ok',fb:"Background bandwidth hogs can cause this — worth checking."},
+    ]},
+    check_wifi:{info:"Simon is connected to 'Barker-Office' (same as colleagues) but at signal strength -78 dBm — much weaker than colleagues at -52 dBm.",prompt:"Weak signal despite same location. Could be adapter or band.",opts:[
+      {t:"Check which Wi-Fi frequency band Simon is connected to",next:'check_band',pts:3,tag:'good',fb:"Weak signal at the same location often means the adapter is stuck on 2.4GHz when 5GHz is available."},
+    ]},
+    restart_router:{info:"Router restarted. Simon's speed is still 2 Mbps. Others are still fast. The router was never the problem.",prompt:"Router restart made no difference. The issue is Simon's PC.",opts:[
+      {t:"Run a speed test comparison and check Simon's Wi-Fi band",next:'speed_test',pts:2,tag:'ok',fb:"Should have compared speeds and checked the device before touching shared infrastructure."},
+    ]},
+    check_band:{info:"Simon's PC shows connected to 'Barker-Office' at 2.4 GHz. Colleagues are on 5 GHz. The network has both bands with the same name.",prompt:"Simon's adapter defaulted to 2.4 GHz. How do you switch him to 5 GHz?",opts:[
+      {t:"Forget the network and reconnect — Windows should pick 5GHz as it's stronger",next:'reconnect',pts:3,tag:'good',fb:"Forgetting and reconnecting usually lets Windows pick the better (5GHz) band."},
+    ]},
+    check_usage:{info:"Task Manager > Performance > Ethernet/Wi-Fi shows network usage at 1.8 Mbps continuously. Windows Update is downloading in the background.",prompt:"Windows Update is consuming nearly all the bandwidth.",opts:[
+      {t:"Pause Windows Update and confirm Simon's normal speed returns",next:'resolved',pts:3,tag:'good',fb:"Pausing Update frees the bandwidth. Schedule updates for out-of-hours."},
+    ]},
+    reconnect:{info:"Simon forgets and reconnects to the network — Windows connects to the 5 GHz band. Speed test now shows 89 Mbps.",prompt:"Problem resolved. Speed matches colleagues.",opts:[
+      {t:"Confirm the fix held and advise on keeping the 5GHz connection",next:'resolved',pts:3,tag:'good',fb:"5GHz reconnect fixed it. Speed is now consistent with colleagues."},
+    ]},
+    resolved:{resolved:true,summary:"Simon reconnected to the 5GHz band. Speed went from 2 Mbps to 89 Mbps — matching his colleagues.",lesson:"When one device is slow but all others are fine, always look at the device itself — the router and ISP are not the issue. Most common causes: connected to 2.4GHz instead of 5GHz (slower and more congested), Windows Update consuming bandwidth, a background process using network, or a faulty/outdated network adapter. Speed testing the affected device vs a working one immediately quantifies the problem.",tip:"If a device keeps defaulting to 2.4GHz, you can set adapter preference in Network Adapter Properties > Advanced > Band Preference or set to '5GHz only'. Alternatively, creating separate SSIDs for 2.4GHz (e.g. Barker-Office-2.4) and 5GHz (Barker-Office-5) prevents this problem entirely."}
+  }
+},
+{
+  id:'TKT-023',title:"Remote Desktop connection refused from home",
+  priority:'high',category:'Networking',catColor:'#f59e0b',
+  user:'Philip Hart',role:'Senior Accountant · Barker & Sons Ltd',
+  time:'08:30 today',hint:"RDP not connecting is usually one of three things: RDP not enabled on the target PC, the wrong IP, or a firewall blocking port 3389. Check in that order.",
+  message:"I'm trying to connect to my office PC from home using Remote Desktop but I keep getting 'The remote computer could not be reached'. It used to work last week. I'm connected to the VPN.",
+  scenes:{
+    start:{prompt:"RDP worked last week, broken now. VPN is connected. What do you check first?",opts:[
+      {t:"Verify the office PC is turned on and not in sleep mode",next:'check_power',pts:3,tag:'good',fb:"If the target PC is off or sleeping, RDP simply can't connect — most common cause."},
+      {t:"Check if Remote Desktop is still enabled on the office PC",next:'check_rdp',pts:2,tag:'ok',fb:"Worth checking — RDP can get disabled by Group Policy updates."},
+      {t:"Check Philip is using the correct IP address or hostname",next:'check_ip',pts:2,tag:'ok',fb:"If the PC's IP changed since last week, the saved connection won't work."},
+    ]},
+    check_power:{info:"You remote into the office server and check. Philip's PC (BARKER-PHIL-L01) shows as offline in the network — it's in hibernation.",prompt:"PC is hibernating. How do you wake it remotely?",opts:[
+      {t:"Use Wake-on-LAN to remotely wake the PC, or ask someone in the office to wake it",next:'wake_pc',pts:3,tag:'good',fb:"Wake-on-LAN sends a magic packet that wakes the PC remotely — or a quick call to the office works too."},
+    ]},
+    check_rdp:{info:"You check System Properties > Remote tab on the office PC remotely. RDP is enabled. Not the issue.",prompt:"RDP is enabled. What else could prevent connection?",opts:[
+      {t:"Check if the PC is online — might be off or sleeping",next:'check_power',pts:3,tag:'good',fb:"If RDP is enabled but unreachable, the PC being offline is most likely."},
+    ]},
+    check_ip:{info:"Philip's saved connection uses the PC name (BARKER-PHIL-L01) not an IP — should resolve correctly via VPN.",prompt:"Name resolution should work via VPN. Is the PC actually on?",opts:[
+      {t:"Check if Philip's office PC is powered on and awake",next:'check_power',pts:3,tag:'good',fb:"Connection refused + VPN working + correct address = target PC is offline."},
+    ]},
+    wake_pc:{info:"A colleague in the office presses the power button briefly to wake it from hibernation. The PC comes online.",prompt:"PC is awake and on the network. What now?",opts:[
+      {t:"Ask Philip to try the RDP connection again",next:'resolved',pts:3,tag:'good',fb:"Philip connects immediately. Was just the PC being in hibernation."},
+    ]},
+    resolved:{resolved:true,summary:"Office PC was in hibernation. Woken by a colleague. RDP connected immediately.",lesson:"RDP 'could not be reached' when VPN is connected usually means the target PC is off, asleep, or hibernating — not an RDP or firewall issue. Check PC power state first. If this is a recurring issue, disable hibernation on PCs used for remote access, or configure Wake-on-LAN so users can wake their own PCs remotely. RDP port 3389 blocked by firewall is a separate issue — you'd see a timeout rather than immediate refusal.",tip:"You can disable Sleep/Hibernate for network-connected PCs via Group Policy or Power Options. For users who regularly work from home, this prevents constant 'my PC is sleeping' support calls. Wake-on-LAN requires the PC to support it (most business laptops do) and the router/switch to allow the magic packet through."}
+  }
+},
+{
+  id:'TKT-024',title:"Can't save files to the shared network drive",
+  priority:'medium',category:'Networking',catColor:'#f59e0b',
+  user:'Donna Walker',role:'Operations Manager · Barker & Sons Ltd',
+  time:'13:40 today',hint:"Shared drive access problems are usually permissions or the drive mapping being broken — check which error message you get as it tells you which one.",
+  message:"I can see the shared network drive (S: drive) but when I try to save anything to it I get 'You do not have permission to perform this operation'. I could save to it fine yesterday. Nothing has changed on my end.",
+  scenes:{
+    start:{prompt:"Can see the drive but can't write to it. What do you check?",opts:[
+      {t:"Check Donna's permissions on the shared folder in the file server or SharePoint",next:'check_perms',pts:3,tag:'good',fb:"'No permission to save' is a permissions error — check them in the source system."},
+      {t:"Disconnect and reconnect the S: drive mapping",next:'reconnect_drive',pts:1,tag:'ok',fb:"Won't help if it's a permissions issue — she can see the drive, so the mapping is fine."},
+      {t:"Ask Donna to restart her PC",next:'restart_pc',pts:0,tag:'bad',fb:"A restart won't change file permissions — investigate the actual error."},
+    ]},
+    check_perms:{info:"You check the file server permissions for Donna's account on the Shared folder. She has 'Read' access but 'Write' access was removed yesterday.",prompt:"Write permission removed yesterday. Find out why before restoring it.",opts:[
+      {t:"Check with the file server admin or IT log who changed the permission and why",next:'check_why',pts:3,tag:'good',fb:"Permissions are sometimes changed deliberately — check before restoring."},
+      {t:"Restore her Write permission immediately",next:'restore_perms_early',pts:0,tag:'bad',fb:"Check WHY the permission was removed first — it might have been intentional."},
+    ]},
+    reconnect_drive:{info:"Drive disconnected and reconnected. Still can't save — the error is a permissions issue, not a broken mapping.",prompt:"Mapping was fine. The issue is permissions.",opts:[
+      {t:"Check Donna's permissions on the shared folder",next:'check_perms',pts:2,tag:'ok',fb:"Should have checked permissions first — 'no permission to save' is a clear permissions error message."},
+    ]},
+    restart_pc:{info:"PC restarted. Still can't save — permissions are server-side and don't change with a restart.",prompt:"Restart had no effect. Check server-side permissions.",opts:[
+      {t:"Check Donna's permissions on the shared folder",next:'check_perms',pts:2,tag:'ok',fb:"Permissions are controlled server-side — client-side fixes like restarts don't affect them."},
+    ]},
+    check_why:{info:"The server admin says a security audit was run yesterday and staff who haven't logged into the shared drive in 90+ days had write access removed automatically.",prompt:"It was an automated security audit. Donna's access was removed by policy, not by mistake.",opts:[
+      {t:"Confirm Donna still needs write access, get manager approval, then restore it",next:'restore_approved',pts:3,tag:'good',fb:"Correct process — verify the need, get approval, then restore with a record."},
+    ]},
+    restore_perms_early:{info:"You restore Write access. The next day the security team emails asking why an account that failed the audit review had permissions manually restored.",prompt:"You've bypassed a security control. Always check WHY before restoring permissions.",opts:[
+      {t:"Explain the situation to the security team and confirm with manager it was needed",next:'resolved',pts:0,tag:'bad',fb:"This should have been done before restoring. Security controls exist for a reason."},
+    ]},
+    restore_approved:{info:"Donna's manager confirms she needs write access for her daily role. You restore Write permission and log the change.",prompt:"Permission restored with approval and audit trail.",opts:[
+      {t:"Confirm with Donna she can save files again",next:'resolved',pts:3,tag:'good',fb:"Donna confirms access is working. Properly documented with manager approval."},
+    ]},
+    resolved:{resolved:true,summary:"Write permission restored following manager approval. Automated security audit had removed it after 90 days of inactivity.",lesson:"'You do not have permission' errors on network drives are always a server-side permissions issue — client-side fixes (restarts, reconnecting drives) don't help. Before restoring any permission, check WHY it was removed — automated security audits, role changes, or deliberate removals all happen. Always get manager approval before restoring access and log the change. Audit trails for permission changes are essential.",tip:"Consider setting up regular access reviews for shared drives rather than relying on automated removal. A quarterly email to managers asking 'does this person still need this access?' catches role changes before they cause disruption. Microsoft Entra (Azure AD) has Access Reviews built in for M365 resources."}
+  }
+},
+{
+  id:'TKT-025',title:"URGENT: Ransomware message on screen with countdown timer",
+  priority:'critical',category:'Security',catColor:'#ef4444',
+  user:'All Staff — Reported by Karen Fox',role:'Office Manager · Barker & Sons Ltd',
+  time:'09:03 today',hint:"Ransomware is a major incident. Speed and containment are everything — disconnect from the network FIRST, before anything else.",
+  message:"URGENT — One of our PCs in accounts has a message on screen saying all our files have been encrypted and we need to pay Bitcoin within 48 hours to get them back. There's a countdown timer. The PC is still on. What do we do?",
+  scenes:{
+    start:{prompt:"Active ransomware infection. Countdown timer. What's the FIRST thing you do?",opts:[
+      {t:"Immediately disconnect the infected PC from the network — unplug ethernet, disable Wi-Fi",next:'isolate',pts:3,tag:'good',fb:"CRITICAL: Ransomware spreads across the network. Isolation stops it reaching other machines. This is step 1 — faster than anything else."},
+      {t:"Switch off the infected PC immediately",next:'power_off_first',pts:1,tag:'ok',fb:"Turning off can help, but disconnect from network FIRST — while it's still on it can still spread."},
+      {t:"Try to identify what ransomware strain it is",next:'identify_first',pts:0,tag:'bad',fb:"Don't spend time investigating on an actively infected PC that's still networked — isolate first, investigate after."},
+      {t:"Pay the ransom to get the files back quickly",next:'pay_ransom',pts:0,tag:'bad',fb:"Never pay ransomware — payment doesn't guarantee decryption, funds criminal operations, and makes you a target again."},
+    ]},
+    isolate:{info:"You instruct Karen to physically unplug the ethernet cable and disable Wi-Fi on the infected PC. It's now isolated.",prompt:"PC isolated. What next?",opts:[
+      {t:"Check all other PCs immediately for signs of encryption or the ransom note",next:'check_others',pts:3,tag:'good',fb:"Ransomware may have already started spreading before isolation. Check all machines immediately."},
+      {t:"Power off the infected PC",next:'power_off',pts:2,tag:'ok',fb:"Good — powers it off to prevent further encryption. But check other machines first in case they're also affected."},
+    ]},
+    power_off_first:{info:"PC is off. But it was connected to the network for 5 minutes before shutdown — ransomware may have started spreading.",prompt:"PC is off but network spread is possible. Disconnect all other PCs?",opts:[
+      {t:"Disconnect all PCs from the network as a precaution and check each one",next:'check_others',pts:3,tag:'good',fb:"Right — until you know the scope, take everything offline. Business continuity matters less than stopping the spread."},
+    ]},
+    identify_first:{info:"While you're investigating the ransom note, two more PCs in accounts show the same message. The ransomware spread while the original PC was still networked.",prompt:"Three machines now infected. Isolate everything immediately.",opts:[
+      {t:"Disconnect ALL machines from the network right now",next:'mass_isolate',pts:2,tag:'ok',fb:"Should have isolated first — every second networked is a risk of spread. Contain first, identify after."},
+    ]},
+    pay_ransom:{info:"Management contacts the ransomware group. No files are decrypted despite payment. The attackers also return 2 weeks later with a second attack since they know the company will pay.",prompt:"Payment failed to recover files. What should have been done instead?",opts:[
+      {t:"Restore from Veeam backup and engage a cybersecurity incident response team",next:'check_others',pts:1,tag:'ok',fb:"This was always the right answer. Ransomware payment success rate is under 40% — backups are the only reliable recovery."},
+    ]},
+    check_others:{info:"You check all PCs — the ransomware reached 3 machines in the accounts department. The rest of the network appears unaffected due to quick isolation.",prompt:"3 machines infected, rest contained. What's the recovery path?",opts:[
+      {t:"Restore the 3 affected machines from Veeam backups from last night",next:'restore_backup',pts:3,tag:'good',fb:"Backups are the correct recovery method for ransomware — never pay the ransom."},
+    ]},
+    mass_isolate:{info:"All machines isolated. Damage contained to the original 3 PCs. Backups are intact.",prompt:"Scope contained. How do you recover?",opts:[
+      {t:"Restore from Veeam backups and investigate the attack vector",next:'restore_backup',pts:3,tag:'good',fb:"Backups are the only reliable recovery. Then investigate how the attack got in."},
+    ]},
+    power_off:{info:"PC powered off. Now check the rest of the network.",prompt:"Original PC off. Check all other machines immediately.",opts:[
+      {t:"Walk the office and check every PC for ransom notes or encrypted files",next:'check_others',pts:3,tag:'good',fb:"Speed matters — the faster you check, the sooner you know the scope."},
+    ]},
+    restore_backup:{info:"Veeam backups from 11pm last night are intact. You restore all 3 machines from backup. Files are recovered to within 9 hours of data loss.",prompt:"Files restored. What must you do before putting machines back online?",opts:[
+      {t:"Investigate how the ransomware got in, patch the vulnerability, then restore to network",next:'resolved',pts:3,tag:'good',fb:"Never put a recovered machine back online without finding and closing the attack vector — you'll just get infected again."},
+    ]},
+    resolved:{resolved:true,summary:"3 PCs infected. Isolated within 8 minutes. Restored from Veeam backup. Attack vector (phishing email with malicious macro) identified and blocked.",lesson:"Ransomware response order: 1) DISCONNECT from network immediately (unplug ethernet first). 2) Power off if still active. 3) Check all other machines for spread. 4) Do NOT pay — recovery rate is poor and you become a repeat target. 5) Restore from backups. 6) Find the attack vector before going back online. Good backups (Veeam, offsite, air-gapped) are your only reliable protection against ransomware.",tip:"Ransomware almost always arrives via phishing email with a malicious attachment, a malicious link, or via an exposed RDP port. Key defences: email filtering (M365 Defender), disable macros in Office by default, keep RDP behind VPN, patch everything regularly, and maintain tested offline/air-gapped backups. Cyber Essentials certification covers most of these controls."}
+  }
+},
+{
+  id:'TKT-026',title:"Locked out of MFA — lost phone",
+  priority:'high',category:'Security',catColor:'#ef4444',
+  user:'Thomas Reid',role:'Finance Director · Barker & Sons Ltd',
+  time:'08:15 today',hint:"MFA resets are high-risk — someone impersonating a legitimate user is a common social engineering attack. Always verify identity through an out-of-band method before resetting MFA.",
+  message:"I've lost my phone and I can't get into Microsoft 365 at all because it's asking for the authenticator app code. I'm at an important board meeting at 9am and need access to my documents urgently.",
+  scenes:{
+    start:{prompt:"MFA locked out, phone lost, urgent meeting. What's your process?",opts:[
+      {t:"Verify Thomas's identity through an out-of-band method before any MFA changes",next:'verify_id',pts:3,tag:'good',fb:"CRITICAL: MFA resets are a prime social engineering target. Someone pretending to be Thomas could get full account access. Verify identity first."},
+      {t:"Immediately reset Thomas's MFA in M365 Admin so he can get in",next:'reset_no_verify',pts:0,tag:'bad',fb:"Never reset MFA without verifying identity — 'lost phone, urgent access needed' is a classic social engineering script."},
+      {t:"Ask Thomas some security questions to verify his identity",next:'security_questions',pts:1,tag:'ok',fb:"Security questions can be guessed or researched — use a more reliable identity verification method."},
+    ]},
+    verify_id:{info:"You call Thomas's manager (the MD) on a known number to confirm Thomas is genuinely at the board meeting and has lost his phone. The MD confirms.",prompt:"Identity verified through the MD. What do you do now?",opts:[
+      {t:"Temporarily bypass MFA for Thomas's account and have him set up MFA on his new phone immediately",next:'bypass_mfa',pts:3,tag:'good',fb:"Identity verified — safe to proceed. Temporary bypass + immediate re-setup is the right approach."},
+    ]},
+    reset_no_verify:{info:"You reset the MFA without verification. The next day, Thomas's manager calls — someone impersonated Thomas using a LinkedIn profile to research his details. The account was used to send fraudulent invoices.",prompt:"MFA social engineering attack succeeded because identity wasn't verified.",opts:[
+      {t:"Immediately lock the account, investigate the breach, and review the access logs",next:'resolved',pts:0,tag:'bad',fb:"This incident was preventable. Always verify identity out-of-band before any MFA change."},
+    ]},
+    security_questions:{info:"You ask Thomas his date of birth and role. This information is often publicly available (LinkedIn, company website). Not a reliable verification method.",prompt:"Security questions aren't secure enough for MFA resets. Use a better method.",opts:[
+      {t:"Call Thomas's manager on a known number to confirm his identity",next:'verify_id',pts:2,tag:'ok',fb:"Better — out-of-band verification through a known contact is much more reliable."},
+    ]},
+    bypass_mfa:{info:"You temporarily disable MFA for Thomas's account and give him a time limit (2 hours). He accesses his documents for the meeting.",prompt:"Thomas is in. What must happen before end of day?",opts:[
+      {t:"Have Thomas set up MFA on a temporary/new phone today and re-enable it on his account",next:'resolved',pts:3,tag:'good',fb:"MFA must be re-enabled as soon as possible — the account is exposed until it is."},
+    ]},
+    resolved:{resolved:true,summary:"Identity verified via MD. MFA temporarily bypassed. Thomas attended meeting. MFA re-set up on new device by 11am.",lesson:"MFA resets are a prime social engineering target — 'I lost my phone, I need urgent access' is one of the most common pretexts attackers use. ALWAYS verify identity through an out-of-band method (call someone who knows the person, video call, physical ID check) before resetting MFA. Security questions are not sufficient — they can be researched. Once identity is verified, bypass temporarily and re-enable MFA immediately.",tip:"Set up backup MFA methods during onboarding: the Microsoft Authenticator app, PLUS an alternative (e.g. a desk phone number or backup email). This means a lost phone doesn't require IT involvement at all — the user just uses their backup method."}
+  }
+},
+{
+  id:'TKT-027',title:"M365 alert — login from Russia on a staff account",
+  priority:'critical',category:'Security',catColor:'#ef4444',
+  user:'M365 Security Alert (automated)',role:'Microsoft Defender for M365',
+  time:'03:14 last night',hint:"A login from an unusual country could be genuine (VPN, travel) or a breach. Determine which quickly — but act as if it's real until you confirm otherwise.",
+  message:"AUTOMATED ALERT: Suspicious sign-in detected. Account: sarah.mitchell@barkerandsons.co.uk. Location: Moscow, Russia. Time: 03:14. Activity: 12 emails forwarded externally. This account signed in from the UK at 17:30 yesterday.",
+  scenes:{
+    start:{prompt:"Foreign login at 3am with email forwarding activity. How do you respond?",opts:[
+      {t:"Immediately revoke all active sessions and reset Sarah's password",next:'revoke_sessions',pts:3,tag:'good',fb:"Active session = active breach. Revoke first to kick the attacker out, then investigate."},
+      {t:"Call Sarah first to ask if she's travelling or using a VPN",next:'call_sarah',pts:2,tag:'ok',fb:"Worth checking, but a 3am Moscow login after a 5:30pm UK login is almost certainly a breach — act first, verify after."},
+      {t:"Monitor the account for 24 hours to gather more information",next:'monitor',pts:0,tag:'bad',fb:"Never monitor a live breach — every minute gives the attacker more time to cause damage."},
+    ]},
+    revoke_sessions:{info:"M365 Admin > Users > Sarah Mitchell > Sign out of all sessions. All active tokens revoked. Password reset enforced.",prompt:"Attacker is now kicked out. What do you investigate?",opts:[
+      {t:"Check what emails were forwarded and to which external address",next:'check_forwarding',pts:3,tag:'good',fb:"12 emails forwarded externally is the key damage — you need to know what was sent and where."},
+    ]},
+    call_sarah:{info:"You call Sarah at 6am. She's at home in the UK — definitely not in Russia, definitely not awake at 3am.",prompt:"Confirmed breach. Attacker is still in the account right now.",opts:[
+      {t:"Immediately revoke all sessions and reset Sarah's password",next:'revoke_sessions',pts:3,tag:'good',fb:"Act now — attacker may still be in the account. Every second counts."},
+    ]},
+    monitor:{info:"While monitoring, the attacker forwards another 30 emails and sets up a mail rule to forward all future emails from @barkerandsons.co.uk to an external Gmail address.",prompt:"Monitoring allowed the breach to continue. Act immediately.",opts:[
+      {t:"Revoke all sessions and reset the password immediately",next:'revoke_sessions',pts:0,tag:'bad',fb:"Should have acted at first sight. Monitoring an active breach gives the attacker time to do more damage."},
+    ]},
+    check_forwarding:{info:"M365 Defender shows: 12 emails forwarded to barkersupplieraccounts@gmail.com — a spoofed version of your supplier's email. The emails were client invoices.",prompt:"Client invoices sent to a fake Gmail — likely a Business Email Compromise (BEC) fraud setup. What do you do?",opts:[
+      {t:"Alert the MD immediately, remove the forwarding rule, and check if any payments were misdirected",next:'resolved',pts:3,tag:'good',fb:"This is now a financial fraud risk as well as a security incident. Escalate immediately."},
+    ]},
+    resolved:{resolved:true,summary:"Sessions revoked, password reset, forwarding rule removed. MD alerted. Supplier contacted to verify no fraudulent payment instructions received.",lesson:"A foreign country login at unusual hours is almost always a breach — treat it as real and act immediately. Response order: 1) Revoke all sessions. 2) Reset password + enforce MFA. 3) Check what the attacker accessed or changed (email rules, forwarding). 4) Assess damage. Business Email Compromise (BEC) is a common follow-up — attackers access email accounts to intercept financial communications and redirect payments.",tip:"Enable M365 Conditional Access policies to block sign-ins from high-risk countries if your users never work there. Also configure alerts in M365 Defender for: sign-ins from new countries, new email forwarding rules, and mass email access. These alerts catch breaches in near real-time."}
+  }
+},
+{
+  id:'TKT-028',title:"URGENT: User clicked phishing link AND entered their password",
+  priority:'critical',category:'Security',catColor:'#ef4444',
+  user:'Michael Burns',role:'Finance Clerk · Barker & Sons Ltd',
+  time:'10:17 today',hint:"Credentials entered on a phishing site = account is compromised. Act in the next few minutes — the attacker may already be logging in.",
+  message:"Hi, I think I made a terrible mistake. I got an email saying my account was suspended and I clicked the link and it asked for my email and password and I entered them. I've just realised it might not be real. Have I done something bad?",
+  scenes:{
+    start:{prompt:"Credentials entered on a phishing site. This is an active incident. What's step 1?",opts:[
+      {t:"Immediately reset Michael's M365 password and revoke all active sessions right now",next:'reset_now',pts:3,tag:'good',fb:"CRITICAL: Every second the stolen credentials are valid, the attacker can use them. Reset now."},
+      {t:"Ask Michael to tell you more about the email first",next:'ask_first',pts:0,tag:'bad',fb:"You already know credentials were entered — don't waste time gathering information while the account is open to attack."},
+      {t:"Check M365 sign-in logs to see if anyone has already logged in",next:'check_logs',pts:2,tag:'ok',fb:"Good diagnostic step, but reset the password simultaneously — the attacker may be logging in right now."},
+    ]},
+    reset_now:{info:"Password reset completed in 90 seconds. All active sessions revoked. Michael is signed out of everything.",prompt:"Attacker can no longer use the stolen password. What do you check next?",opts:[
+      {t:"Check M365 sign-in logs to see if the attacker got in before you reset it",next:'check_logs',pts:3,tag:'good',fb:"Critical to know if the attacker accessed anything — determines the scope of the incident."},
+    ]},
+    ask_first:{info:"While you're getting more details, an alert fires: new sign-in to Michael's account from Nigeria. The attacker used the credentials.",prompt:"Attacker got in while you were talking. Reset everything immediately.",opts:[
+      {t:"Reset password and revoke all sessions RIGHT NOW",next:'reset_now',pts:0,tag:'bad',fb:"Should have done this at first word. Credentials entered on a phishing site = treat as compromised immediately."},
+    ]},
+    check_logs:{info:"M365 sign-in logs: No unauthorised access yet — you reset the password in time. The attacker's login attempt shows as 'Failed — password reset'.",prompt:"Attacker didn't get in. What do you set up to protect the account further?",opts:[
+      {t:"Ensure MFA is active on Michael's account",next:'check_mfa',pts:3,tag:'good',fb:"MFA means a stolen password alone isn't enough — the attacker still can't get in even if they had the old password."},
+    ]},
+    check_mfa:{info:"Michael's account has MFA enabled. Even if the password had been used before you reset it, the attacker would have been blocked by MFA.",prompt:"MFA was the safety net. What do you do with the phishing email?",opts:[
+      {t:"Report the phishing email to M365 Defender and block the sending domain",next:'resolved',pts:3,tag:'good',fb:"Reporting and blocking prevents others receiving the same email and improves Microsoft's detection."},
+    ]},
+    resolved:{resolved:true,summary:"Password reset in 90 seconds. No unauthorised access. MFA confirmed active. Phishing email reported and domain blocked.",lesson:"Credentials entered on a phishing site = treat as compromised, act in seconds. Response: 1) Reset password immediately. 2) Revoke all active sessions. 3) Check sign-in logs for any access before the reset. 4) Confirm MFA is active — it's the safety net if credentials leak. 5) Report and block the phishing email. MFA is the single most effective defence against credential theft — even if the password is stolen, the attacker can't log in without the second factor.",tip:"Enable M365 Identity Protection (Azure AD Premium P2) which auto-detects risky sign-ins and can automatically force password resets or block logins from unfamiliar IPs. It's like having a 24/7 security monitor on every account."}
+  }
+},
+{
+  id:'TKT-029',title:"Employee leaving on Friday — offboarding checklist",
+  priority:'medium',category:'Onboarding / M365 Admin',catColor:'#6366f1',
+  user:'Karen Fox',role:'Office Manager · Barker & Sons Ltd',
+  time:'Monday 09:00',hint:"Offboarding has a critical order — you need to preserve data and transfer access BEFORE disabling the account. Do it in the wrong order and you lose emails and files.",
+  message:"Hi, Daniel Webb in the accounts team is leaving on Friday. He's been here 4 years. Can you make sure everything is sorted from an IT perspective? We need to keep all his emails and files.",
+  scenes:{
+    start:{prompt:"Employee leaving Friday. What's the first thing to organise?",opts:[
+      {t:"Get a full handover plan from Daniel and his manager — what needs to be transferred and to whom",next:'get_plan',pts:3,tag:'good',fb:"Before touching any accounts, know what needs to be preserved, transferred, and to whom."},
+      {t:"Disable Daniel's M365 account on Friday afternoon",next:'disable_first',pts:0,tag:'bad',fb:"Disabling first loses the data transfer window. You need a plan BEFORE disabling anything."},
+      {t:"Convert Daniel's mailbox to a shared mailbox before he leaves",next:'shared_mailbox',pts:2,tag:'ok',fb:"Good thinking, but get the transfer plan first — shared mailbox is the right tool, but do it in the right order."},
+    ]},
+    get_plan:{info:"Daniel's manager says: his emails should be accessible to Karen for 6 months. His OneDrive files need to go to the department SharePoint. His system access should end at 5pm Friday.",prompt:"Clear plan established. What's the technical offboarding order?",opts:[
+      {t:"Convert mailbox to shared, transfer OneDrive, THEN disable the account on Friday at 5pm",next:'convert_mailbox',pts:3,tag:'good',fb:"Correct order: preserve data first, disable access last. This ensures nothing is lost."},
+    ]},
+    disable_first:{info:"You disable Daniel's account Friday morning. He immediately loses access to everything — including files he was mid-handover on. His manager now can't access the emails either.",prompt:"Data transfer was cut short. What should have happened?",opts:[
+      {t:"Re-enable temporarily to complete the data transfer",next:'get_plan',pts:1,tag:'ok',fb:"Should have planned and transferred data BEFORE disabling. The account should have been disabled at close of business, not morning."},
+    ]},
+    shared_mailbox:{info:"You convert Daniel's mailbox to a shared mailbox and give Karen access. Emails are preserved and accessible.",prompt:"Mailbox handled. What about OneDrive files?",opts:[
+      {t:"Transfer Daniel's OneDrive content to the department SharePoint site",next:'onedrive_transfer',pts:3,tag:'good',fb:"OneDrive files are deleted with the account if not transferred — this is a critical step."},
+    ]},
+    convert_mailbox:{info:"M365 Admin > Users > Daniel Webb > Convert to shared mailbox. Karen given access. All 4 years of emails are preserved and accessible to Karen.",prompt:"Mailbox done. What about his files?",opts:[
+      {t:"Transfer Daniel's OneDrive files to the SharePoint department library",next:'onedrive_transfer',pts:3,tag:'good',fb:"OneDrive content is deleted 30 days after account deletion — must be transferred before the account goes."},
+    ]},
+    onedrive_transfer:{info:"M365 Admin > Users > OneDrive > Transfer files. All of Daniel's OneDrive content moved to the Accounts SharePoint library.",prompt:"Files transferred. What happens at 5pm Friday?",opts:[
+      {t:"Disable the account, remove the licence, and return the laptop to IT",next:'resolved',pts:3,tag:'good',fb:"In the right order: data preserved → access disabled → licence removed (saves cost) → hardware returned."},
+    ]},
+    resolved:{resolved:true,summary:"Shared mailbox created. OneDrive content transferred. Account disabled at 5pm Friday. Licence removed. Laptop returned.",lesson:"Offboarding order matters: 1) Get a transfer plan (who needs access to what). 2) Convert mailbox to shared mailbox (preserves emails). 3) Transfer OneDrive content (deleted 30 days after account deletion). 4) Disable the account (at close of business, not morning — user may need it on their last day). 5) Remove M365 licence (saves cost). 6) Recover hardware. If you disable the account first, you lose the ability to transfer data cleanly.",tip:"Build an offboarding checklist form for managers to complete when someone leaves: who gets mailbox access, where files should go, what systems need access removed (not just M365 — think CRM, accounting software, physical access cards). Leaver processes that only cover M365 often miss other system access."}
+  }
+},
+{
+  id:'TKT-030',title:"Deploy new software to all 20 office PCs",
+  priority:'low',category:'Onboarding / M365 Admin',catColor:'#6366f1',
+  user:'Mark Taylor',role:'Managing Director · Barker & Sons Ltd',
+  time:'Wednesday 10:00',hint:"Deploying to 20 PCs manually takes hours and is error-prone. Think about whether there's a tool that can do it all at once — Intune, PDQ Deploy, or Group Policy.",
+  message:"We've purchased a company licence for DocuSign Desktop and I need it installed on all 20 office PCs by end of the week. Is there a way to do this without visiting each PC individually?",
+  scenes:{
+    start:{prompt:"20 PCs need the same software. What's the most efficient approach?",opts:[
+      {t:"Deploy via Microsoft Intune / Endpoint Manager to all enrolled devices at once",next:'intune_deploy',pts:3,tag:'good',fb:"If devices are Intune-enrolled, you can deploy to all 20 from one place in minutes — no manual visits needed."},
+      {t:"Use a third-party tool like PDQ Deploy to push the installer across the network",next:'pdq_deploy',pts:3,tag:'good',fb:"PDQ Deploy is excellent for mass software deployment — push the installer silently to all PCs at once."},
+      {t:"Remote into each PC one by one and install it",next:'manual',pts:0,tag:'bad',fb:"Manual installs across 20 PCs takes 4-6 hours, is error-prone, and is the wrong way to scale IT."},
+    ]},
+    intune_deploy:{info:"You upload the DocuSign installer (.msi) to Intune > Apps > Windows apps > Add. You assign it to the 'All Devices' group. Intune pushes it silently to all 20 enrolled PCs.",prompt:"Deployment started. When will it complete?",opts:[
+      {t:"Intune deploys over the next 1-2 hours as devices check in — confirm with a spot-check on a few PCs",next:'resolved',pts:3,tag:'good',fb:"Intune deployments are asynchronous — devices check in on their own schedule. Spot-check confirms it's working."},
+    ]},
+    pdq_deploy:{info:"PDQ Deploy: you create a new package with the DocuSign installer and the silent install flags (/quiet /norestart). You target 'All Workstations'. Deployment kicks off across the network.",prompt:"Deployment running. How do you verify success?",opts:[
+      {t:"Check PDQ's deployment report — shows success/fail status for each PC",next:'resolved',pts:3,tag:'good',fb:"PDQ gives you a live deployment report. Any failures are flagged so you can follow up on just those PCs."},
+    ]},
+    manual:{info:"You remote into PC 1, download the installer, install it. Then PC 2, download, install. By PC 8 you've been going 2 hours and realise this is unsustainable.",prompt:"Manual approach isn't scalable. Is there a better way?",opts:[
+      {t:"Set up Intune or PDQ Deploy and do the remaining 12 PCs properly",next:'intune_deploy',pts:1,tag:'ok',fb:"The right approach — setting up a deployment tool takes 30 minutes and saves hours this time and every future deployment."},
+    ]},
+    resolved:{resolved:true,summary:"DocuSign deployed to all 20 PCs via Intune/PDQ Deploy in 90 minutes with zero manual visits. Deployment report shows 19/20 successful (1 PC was offline — will install when it next comes online).",lesson:"Mass software deployment to multiple PCs should never be done manually. Intune (if devices are M365-enrolled) and PDQ Deploy (for network-based deployment) can push software to 5 or 500 PCs in the same time it takes to manually install on 1. Both support silent installs so users aren't interrupted. This is how MSPs scale — you cannot visit every PC every time.",tip:"When deploying software, check for the silent install switches first: /quiet and /norestart for .msi files, or check silentinstallhq.com for the flags for almost any application. Testing the silent install on one PC before mass deployment saves headaches."}
+  }
+},
+{
+  id:'TKT-031',title:"Set up Microsoft 365 for a brand new business",
+  priority:'low',category:'Onboarding / M365 Admin',catColor:'#6366f1',
+  user:'New Client — Emma Walsh',role:'Director · Walsh Designs Ltd (new MSP client)',
+  time:'This week',hint:"New M365 tenant setup has a specific order. Get the domain working first — everything else (email, Teams, SharePoint) depends on it.",
+  message:"We're a new design studio of 5 people and we want to set up Microsoft 365. We have the domain walshdesigns.co.uk already registered. We need email, Teams, and somewhere to store files. Can you sort this for us?",
+  scenes:{
+    start:{prompt:"Brand new M365 tenant for a 5-person business. Where do you start?",opts:[
+      {t:"Create the M365 tenant and add the walshdesigns.co.uk custom domain first",next:'create_tenant',pts:3,tag:'good',fb:"Domain verification is the foundation — email and other services won't work on the custom domain until it's verified."},
+      {t:"Create all 5 user accounts immediately",next:'create_users_first',pts:0,tag:'bad',fb:"Can't create @walshdesigns.co.uk addresses until the domain is added and verified — you'd just get @*.onmicrosoft.com addresses."},
+      {t:"Set up SharePoint file storage first",next:'sharepoint_first',pts:1,tag:'ok',fb:"SharePoint is important but the domain should be the very first step — everything else depends on it."},
+    ]},
+    create_tenant:{info:"M365 Admin Centre > Setup > Add domain. You add walshdesigns.co.uk and verify it by adding a TXT record to the domain's DNS. Verification completes in 10 minutes.",prompt:"Domain verified. What's next?",opts:[
+      {t:"Create the 5 user accounts with @walshdesigns.co.uk email addresses",next:'create_users',pts:3,tag:'good',fb:"With the domain verified, you can now create proper email addresses for all 5 staff."},
+    ]},
+    create_users_first:{info:"You create user accounts but they all get @walshdesigns.onmicrosoft.com addresses — the custom domain isn't set up yet.",prompt:"Wrong addresses. Add the custom domain first.",opts:[
+      {t:"Add and verify the walshdesigns.co.uk domain, then update the email addresses",next:'create_tenant',pts:1,tag:'ok',fb:"Should have done this first — domain before users."},
+    ]},
+    sharepoint_first:{info:"SharePoint creates with a @walshdesigns.onmicrosoft.com URL until the domain is added. Not ideal.",prompt:"Add the custom domain first — it's the foundation.",opts:[
+      {t:"Add and verify walshdesigns.co.uk in M365 Admin",next:'create_tenant',pts:2,tag:'ok',fb:"Right — domain first, then everything else."},
+    ]},
+    create_users:{info:"5 user accounts created: emma@walshdesigns.co.uk and 4 others. M365 Business Standard licences assigned to each.",prompt:"Accounts and licences done. What services need configuring?",opts:[
+      {t:"Set up MFA for all accounts, configure email DNS records, and create a shared SharePoint site",next:'configure',pts:3,tag:'good',fb:"Three essentials: MFA security, email routing (MX records), and shared file storage."},
+    ]},
+    configure:{info:"MFA enabled for all 5 users. MX records updated so walshdesigns.co.uk email routes to M365. A 'Walsh Designs' SharePoint team site created with folders for each client project.",prompt:"Core setup complete. What do you give Emma before you go?",opts:[
+      {t:"Provide Emma with: all credentials, a guide on how to use Teams and SharePoint, and emergency IT contact",next:'resolved',pts:3,tag:'good',fb:"Handover documentation is part of the service. A business owner who knows how to use their systems is a happy client."},
+    ]},
+    resolved:{resolved:true,summary:"M365 tenant live for Walsh Designs. Domain verified, 5 accounts active, MFA on, email routing, SharePoint configured. Emma has full handover documentation.",lesson:"New M365 tenant setup order: 1) Create tenant. 2) Add and verify custom domain (DNS TXT record). 3) Create user accounts with custom domain addresses. 4) Assign licences. 5) Enable MFA for all users. 6) Configure MX records so email routes to M365. 7) Set up SharePoint for file storage. 8) Configure Teams. 9) Handover documentation. Domain verification is step 1 because everything else depends on it.",tip:"For MSP clients, build a repeatable onboarding template — a checklist for every new M365 setup. It ensures you never miss a step, looks professional, and makes junior engineers able to handle setups consistently. Document: domain, DNS records changed, admin credentials location, licence count, and any custom configuration."}
+  }
+}
 ];
 
 // ─── APP STATE ────────────────────────────────────────────────────────────────
@@ -839,6 +1644,112 @@ function save(){
   localStorage.setItem('hds_resolved', JSON.stringify([...S.resolved]));
 }
 
+// ─── QUIZ DATA ────────────────────────────────────────────────────────────────
+
+const QUIZ = [
+  {q:"What does POST stand for in the context of computer startup?",opts:["Power-On Self-Test","Program Output System Test","Processor Operating System Transfer","Power Output Status Terminal"],ans:0,exp:"POST (Power-On Self-Test) is the diagnostic testing sequence run by a computer's firmware (BIOS/UEFI) when it is powered on, before the OS loads."},
+  {q:"A user's PC shows a 'No Boot Device Found' error. What is the most likely cause?",opts:["Corrupt antivirus software","The hard drive has failed or is not detected","The monitor cable is loose","Windows needs updating"],ans:1,exp:"'No Boot Device Found' means the BIOS cannot find a bootable drive. The HDD/SSD may have failed, become disconnected, or the boot order in BIOS may be wrong."},
+  {q:"Which Windows command checks and repairs corrupt system files?",opts:["chkdsk /f","ipconfig /flushdns","sfc /scannow","netstat -a"],ans:2,exp:"sfc /scannow (System File Checker) scans protected Windows system files and replaces corrupted files with a cached copy."},
+  {q:"A user can browse the internet but cannot connect to a specific website. The most likely cause is:",opts:["DNS resolution failure for that domain","Their network card has failed","The router is broken","Their password is wrong"],ans:0,exp:"If all other sites work but one doesn't, it's almost always a DNS issue (that domain's DNS records have a problem) or the site itself is down. Check with a site like downforeveryoneorjustme.com."},
+  {q:"What does DHCP do on a network?",opts:["Encrypts network traffic","Automatically assigns IP addresses to devices","Blocks unauthorised access","Tests network speed"],ans:1,exp:"DHCP (Dynamic Host Configuration Protocol) automatically assigns IP addresses, subnet masks, default gateways, and DNS servers to network devices. Without it, each device would need a manually configured IP."},
+  {q:"A PC has a static IP address of 169.254.x.x. What does this indicate?",opts:["A valid static IP assigned by IT","The device failed to get an IP from DHCP (APIPA address)","A VPN is active","The device is on a guest network"],ans:1,exp:"169.254.x.x is an APIPA (Automatic Private IP Addressing) address. Windows assigns this automatically when it cannot reach a DHCP server. It usually means a network connectivity problem."},
+  {q:"What is the purpose of a subnet mask?",opts:["To encrypt data on the network","To define which part of an IP address is the network vs the host","To assign IP addresses automatically","To block external traffic"],ans:1,exp:"The subnet mask defines the network portion and the host portion of an IP address. For example, a /24 mask (255.255.255.0) means the first 3 octets are the network, and the last octet identifies individual devices."},
+  {q:"Which port does HTTPS use by default?",opts:["Port 80","Port 443","Port 25","Port 3389"],ans:1,exp:"HTTPS uses port 443. HTTP uses port 80. Port 25 is SMTP (email). Port 3389 is RDP (Remote Desktop Protocol)."},
+  {q:"A technician runs 'ping 127.0.0.1' — what does this test?",opts:["The connection to Google's DNS server","Whether the local network cable is connected","The local machine's TCP/IP stack (loopback test)","The speed of the internet connection"],ans:2,exp:"127.0.0.1 is the loopback address. Pinging it tests that TCP/IP is installed and functioning on the local machine — it doesn't test any external connection."},
+  {q:"What type of cable is used for most modern wired ethernet connections in an office?",opts:["Coaxial (RG-6)","Fibre optic (OM3)","Twisted pair copper (Cat5e/Cat6)","USB Type-C"],ans:2,exp:"Twisted pair copper cable (Cat5e, Cat6, Cat6a) is the standard for wired ethernet. Cat6 supports up to 10Gbps at 55m, Cat5e supports 1Gbps. Fibre is used for longer runs or backbone connections."},
+  {q:"A user reports their PC is running very slowly. Task Manager shows CPU usage at 100% constantly. What do you check first?",opts:["Replace the RAM","Check which process is using the CPU in Task Manager's Processes tab","Update the graphics driver","Run a disk defragmentation"],ans:1,exp:"Task Manager > Processes tab, sort by CPU — this immediately shows you which process is consuming all the CPU. From there you can investigate whether it's malware, a Windows Update, or a misbehaving application."},
+  {q:"What does the acronym RAM stand for?",opts:["Read Access Memory","Random Access Memory","Rapid Application Module","Redundant Array of Memory"],ans:1,exp:"RAM (Random Access Memory) is the system's short-term memory — it stores data the CPU is actively using. More RAM means more can be held in memory at once without using the slower hard drive."},
+  {q:"Which file system does Windows 10/11 use for system drives?",opts:["FAT32","exFAT","NTFS","ext4"],ans:2,exp:"NTFS (New Technology File System) is the standard Windows file system, supporting large files, file permissions, encryption, and journaling. FAT32 has a 4GB file size limit and is used for USB drives and cross-platform compatibility."},
+  {q:"A customer's laptop screen is completely black but you can hear the fan and see a power light. What do you try first?",opts:["Replace the hard drive","Connect an external monitor to test the GPU and screen","Reinstall Windows","Replace the CMOS battery"],ans:1,exp:"A blank screen with power/fan activity usually means either the screen/backlight has failed or the GPU has a problem. Connecting an external monitor tells you immediately whether the GPU is working (external display works = screen issue, not GPU)."},
+  {q:"What does 'Safe Mode' in Windows do?",opts:["Encrypts all your files for protection","Starts Windows with only basic drivers — useful for diagnosing startup issues","Backs up your data before a restart","Blocks all network access permanently"],ans:1,exp:"Safe Mode starts Windows with minimal drivers and services, disabling third-party software. This lets you diagnose and fix issues caused by bad drivers, malware, or startup programs — if the problem disappears in Safe Mode, a driver or software is causing it."},
+  {q:"What is the difference between a virus and ransomware?",opts:["There is no difference","A virus self-replicates and spreads; ransomware encrypts files and demands payment","A virus is more dangerous","Ransomware only affects servers, not desktops"],ans:1,exp:"A virus is self-replicating malware that spreads by attaching to files. Ransomware is a specific type of malware that encrypts the victim's files and demands payment for the decryption key. Ransomware is often deployed via phishing emails or exposed RDP."},
+  {q:"Which Windows tool lets you schedule tasks to run automatically at specific times?",opts:["Task Manager","Task Scheduler","Event Viewer","Services.msc"],ans:1,exp:"Task Scheduler (taskschd.msc) allows you to schedule scripts, programs, or actions to run at specific times or in response to events. Common uses: scheduled backups, cleanup scripts, maintenance tasks."},
+  {q:"A user says their Outlook keeps asking for their password. What is the most common cause?",opts:["Their monitor resolution is too low","Their M365 password has expired or MFA token has expired","They need to reinstall Outlook","Their keyboard is broken"],ans:1,exp:"Repeated password prompts in Outlook usually mean the password has been changed elsewhere, the account has been locked, or the cached authentication token has expired. Check M365 Admin for account status first."},
+  {q:"What is the function of a UPS (Uninterruptible Power Supply)?",opts:["Speed up internet connection","Provide temporary battery power if mains power fails","Boost Wi-Fi signal","Cool the server room"],ans:1,exp:"A UPS provides battery backup power when mains electricity fails. This allows time for a clean server shutdown (preventing data corruption) or for a generator to start. Critical for servers and network equipment."},
+  {q:"Which CompTIA A+ topic covers configuring and troubleshooting TCP/IP, DNS, and DHCP?",opts:["Core 1 — Mobile Devices","Core 1 — Networking","Core 2 — Operating Systems","Core 2 — Security"],ans:1,exp:"CompTIA A+ Core 1 (220-1101) covers Networking — including TCP/IP configuration, subnetting basics, DNS, DHCP, Wi-Fi standards, and common network troubleshooting tools like ping, tracert, ipconfig, and nslookup."}
+];
+
+// ─── CHEAT SHEET DATA ─────────────────────────────────────────────────────────
+
+const SHEETS = [
+  {
+    title:"Windows Commands (CMD / PowerShell)",
+    items:[
+      {name:"ipconfig /all",desc:"Show full IP configuration — IP, subnet mask, gateway, DNS, MAC address",cmd:"ipconfig /all"},
+      {name:"ipconfig /release + /renew",desc:"Release and renew DHCP IP address (fixes 169.254.x.x issues)",cmd:"ipconfig /release && ipconfig /renew"},
+      {name:"ipconfig /flushdns",desc:"Clear the DNS cache — fixes 'site not found' when the site is actually up",cmd:"ipconfig /flushdns"},
+      {name:"ping",desc:"Test connectivity to a host. ping 8.8.8.8 tests internet; ping 127.0.0.1 tests local TCP/IP",cmd:"ping 8.8.8.8"},
+      {name:"tracert",desc:"Trace the route packets take to a destination — shows where the connection fails",cmd:"tracert google.com"},
+      {name:"nslookup",desc:"Query DNS — check if a domain name resolves correctly",cmd:"nslookup google.com"},
+      {name:"netstat -an",desc:"Show all active network connections and listening ports",cmd:"netstat -an"},
+      {name:"sfc /scannow",desc:"System File Checker — scans and repairs corrupt Windows system files",cmd:"sfc /scannow"},
+      {name:"chkdsk /f /r",desc:"Check and repair disk errors. /f fixes errors, /r finds bad sectors",cmd:"chkdsk C: /f /r"},
+      {name:"powercfg /batteryreport",desc:"Generate a battery health report showing capacity over time",cmd:"powercfg /batteryreport"},
+      {name:"net stop/start wuauserv",desc:"Stop/start the Windows Update service — useful for fixing stuck updates",cmd:"net stop wuauserv"},
+      {name:"gpupdate /force",desc:"Force Group Policy to refresh immediately — applies new domain policies",cmd:"gpupdate /force"},
+      {name:"msconfig",desc:"System Configuration — manage startup programs and boot options",cmd:"msconfig"},
+      {name:"eventvwr",desc:"Event Viewer — the log of everything that happens on Windows including crashes",cmd:"eventvwr"},
+      {name:"taskkill /F /IM",desc:"Force-kill a process by name (useful when Task Manager won't respond)",cmd:"taskkill /F /IM notepad.exe"},
+    ]
+  },
+  {
+    title:"Networking Quick Reference",
+    items:[
+      {name:"Default Gateway",desc:"The router's IP address — what your device sends traffic to for the internet. Usually 192.168.1.1 or 10.0.0.1"},
+      {name:"DNS Server",desc:"Translates domain names (google.com) to IP addresses. Common public DNS: 8.8.8.8 (Google), 1.1.1.1 (Cloudflare)"},
+      {name:"APIPA Address (169.254.x.x)",desc:"Device couldn't get an IP from DHCP. Check cable/Wi-Fi connection and DHCP server"},
+      {name:"Subnet Mask /24 = 255.255.255.0",desc:"Allows 254 hosts on the same network. Most home/small office networks use this"},
+      {name:"Common Ports",desc:"80=HTTP, 443=HTTPS, 25=SMTP, 110=POP3, 143=IMAP, 3389=RDP, 22=SSH, 53=DNS, 67/68=DHCP"},
+      {name:"Wi-Fi Bands",desc:"2.4GHz: longer range, slower, more congested. 5GHz: shorter range, faster, less interference. Use 5GHz for video calls"},
+      {name:"Cat5e vs Cat6",desc:"Cat5e: 1Gbps up to 100m. Cat6: 10Gbps up to 55m, less crosstalk. Both use RJ-45 connectors"},
+      {name:"ping test sequence",desc:"1) ping 127.0.0.1 (local TCP/IP) 2) ping [gateway] (local network) 3) ping 8.8.8.8 (internet IP) 4) ping google.com (DNS)"},
+    ]
+  },
+  {
+    title:"Microsoft 365 Admin Quick Reference",
+    items:[
+      {name:"Reset MFA + Unblock sign-in",desc:"M365 Admin > Users > [user] > Reset MFA. Unblock: Users > [user] > Unblock sign-in"},
+      {name:"Shared Mailbox",desc:"Admin > Groups > Shared Mailboxes > Add mailbox. Assign members. Members see it in Outlook automatically"},
+      {name:"DKIM Setup",desc:"Admin > Settings > Domains > [domain] > Email authentication. Enable DKIM, add 2 CNAME records to DNS"},
+      {name:"DMARC Record",desc:"DNS TXT record: v=DMARC1; p=quarantine; rua=mailto:postmaster@yourdomain.com"},
+      {name:"OneDrive Recycle Bin",desc:"Files deleted from OneDrive stay in online recycle bin for 93 days at onedrive.com/recycle"},
+      {name:"Convert Mailbox to Shared",desc:"Admin > Users > [user] > Convert to shared mailbox. Preserves all emails. Remove licence after conversion"},
+      {name:"Transfer OneDrive on Offboarding",desc:"Admin > Users > [user] > OneDrive > Create link to files (or transfer to another user's OneDrive)"},
+      {name:"M365 Sign-in Logs",desc:"Azure AD / Entra > Sign-in logs. Filter by user to see all login attempts, locations, and failure reasons"},
+      {name:"Revoke All Sessions",desc:"Admin > Users > [user] > Sign out of all sessions. Immediately invalidates all active tokens"},
+      {name:"Self-Service Password Reset (SSPR)",desc:"Azure AD > Password Reset. Users register once and can unlock themselves — reduces IT calls significantly"},
+    ]
+  },
+  {
+    title:"Security Checklist — Essentials",
+    items:[
+      {name:"MFA on all accounts",desc:"The single most impactful security control. Blocks 99.9% of automated credential attacks (Microsoft stat)"},
+      {name:"Email filtering",desc:"M365 Defender / Exchange Online Protection blocks malicious attachments and phishing links before they reach users"},
+      {name:"SPF + DKIM + DMARC",desc:"All three must be configured on every domain you send email from. Prevents spoofing and spam filtering"},
+      {name:"Principle of Least Privilege",desc:"Users only get the permissions they actually need. Review access regularly — especially when people change roles"},
+      {name:"Patch management",desc:"Keep Windows, Office, browsers, and firmware updated. Most breaches exploit known vulnerabilities with available patches"},
+      {name:"Backups (3-2-1 rule)",desc:"3 copies of data, 2 different media types, 1 offsite. Test restores regularly — untested backups may not work"},
+      {name:"Phishing awareness",desc:"Teach users: hover over links before clicking, check sender address (not just display name), report suspicious emails"},
+      {name:"Disable unused services",desc:"RDP, SSH, and admin ports should not be exposed to the internet. Use VPN for remote access"},
+      {name:"Incident response plan",desc:"Know in advance: who to call, how to isolate a device, who approves paying a ransom (answer: nobody — don't pay)"},
+      {name:"Cyber Essentials",desc:"UK government-backed certification. Covers 5 controls: firewalls, secure config, access control, malware protection, patch management"},
+    ]
+  },
+  {
+    title:"Hardware Diagnostics — First Steps",
+    items:[
+      {name:"No display on boot",desc:"Check: power cable, monitor input selected correctly, try external monitor (tests GPU vs screen), reseat RAM"},
+      {name:"PC won't power on",desc:"Check: power cable fully inserted, surge protector on, try different outlet, check PSU switch is on"},
+      {name:"Overheating / random shutdowns",desc:"Check: fans spinning, clean dust from vents and heatsink, thermal paste may need replacing on older machines"},
+      {name:"HDD vs SSD identification",desc:"Task Manager > Performance > Disk — shows type. Or check Device Manager. SSD: near-instant boot. HDD: audible spinning"},
+      {name:"RAM test",desc:"Windows Memory Diagnostic (mdsched.exe) — tests RAM for errors. Run overnight, results in Event Viewer on next boot"},
+      {name:"BSOD analysis",desc:"Event Viewer > Windows Logs > System. Or run WhoCrashed (free tool) which reads minidump files and names the faulting driver"},
+      {name:"Battery health",desc:"CMD: powercfg /batteryreport. Check 'Full charge capacity' vs 'Design capacity'. Under 50% = replace battery"},
+      {name:"USB not detected",desc:"Try different port. Check Device Manager for Code 43 on USB controllers. Try on another PC to rule out device fault"},
+    ]
+  }
+];
+
 // ─── VIEW SWITCHING ───────────────────────────────────────────────────────────
 
 function goView(v, ticketId){
@@ -846,14 +1757,16 @@ function goView(v, ticketId){
   document.querySelectorAll('.view').forEach(el=>el.classList.remove('on'));
   document.querySelectorAll('.sb-item').forEach(el=>el.classList.remove('active'));
   document.getElementById('view-'+v).classList.add('on');
-  if(v==='dash'||v==='tix') document.getElementById('nav-'+v).classList.add('active');
+  if(v==='dash'||v==='tix'||v==='quiz'||v==='sheet') document.getElementById('nav-'+v).classList.add('active');
   if(v==='play' && ticketId){
     S.ticket = ticketId;
     renderPlayer();
   }
   updateGlobal();
-  if(v==='dash') renderDash();
-  if(v==='tix')  renderTable();
+  if(v==='dash')  renderDash();
+  if(v==='tix')   renderTable();
+  if(v==='quiz')  renderQuiz();
+  if(v==='sheet') renderSheet();
 }
 
 // ─── GLOBAL STATS ─────────────────────────────────────────────────────────────
@@ -911,6 +1824,102 @@ function renderTable(){
       <div class="t-act">${done?'✓ Resolved':'→ Start'}</div>
     </div>`;
   }).join('');
+}
+
+// ─── QUIZ ─────────────────────────────────────────────────────────────────────
+
+let QS = { idx:0, score:0, answered:false, userAns:-1, started:false };
+
+function renderQuiz(){
+  const body = document.getElementById('quiz-body');
+  if(!body) return;
+
+  if(!QS.started){
+    body.innerHTML = `<div class="quiz-start" style="margin-top:24px">
+      <div style="font-size:3rem;margin-bottom:16px">🧠</div>
+      <h2>CompTIA A+ Practice Quiz</h2>
+      <p>${QUIZ.length} questions covering Core 1 &amp; Core 2 topics<br>Networking · Hardware · Windows · Security · M365</p>
+      <button class="btn-start" onclick="QS.started=true;renderQuiz()">Start Quiz →</button>
+    </div>`;
+    return;
+  }
+
+  if(QS.idx >= QUIZ.length){
+    const pct = Math.round((QS.score / QUIZ.length) * 100);
+    const grade = pct >= 80 ? '🎉 Pass' : pct >= 60 ? '⚠️ Getting there' : '📚 Keep studying';
+    body.innerHTML = `<div class="q-result">
+      <div style="font-size:3rem;margin-bottom:16px">${pct>=80?'🏆':pct>=60?'📈':'📖'}</div>
+      <div style="font-size:1.5rem;font-weight:800;color:#1e3a5f;margin-bottom:8px">${grade}</div>
+      <div style="font-size:2.5rem;font-weight:900;color:${pct>=80?'#22c55e':pct>=60?'#f59e0b':'#ef4444'};margin-bottom:16px">${QS.score} / ${QUIZ.length}</div>
+      <div style="font-size:.95rem;color:#64748b;margin-bottom:32px">${pct}% — CompTIA A+ pass mark is 675/900 (approx 75%)</div>
+      <button class="btn-start" onclick="QS={idx:0,score:0,answered:false,userAns:-1,started:true};renderQuiz()">🔁 Retake Quiz</button>
+    </div>`;
+    return;
+  }
+
+  const q = QUIZ[QS.idx];
+  const prog = `<div class="q-prog"><div style="height:100%;background:#3b82f6;border-radius:4px;width:${((QS.idx)/QUIZ.length)*100}%;transition:width .3s"></div></div>`;
+
+  if(!QS.answered){
+    body.innerHTML = `${prog}
+      <div class="q-card">
+        <div class="q-num">Question ${QS.idx+1} of ${QUIZ.length}</div>
+        <div class="q-text">${q.q}</div>
+        <div class="q-opts">
+          ${q.opts.map((o,i)=>`<button class="q-opt" onclick="answerQuiz(${i})">${String.fromCharCode(65+i)}. ${o}</button>`).join('')}
+        </div>
+      </div>`;
+  } else {
+    const ua = QS.userAns;
+    body.innerHTML = `${prog}
+      <div class="q-card">
+        <div class="q-num">Question ${QS.idx+1} of ${QUIZ.length}</div>
+        <div class="q-text">${q.q}</div>
+        <div class="q-opts">
+          ${q.opts.map((o,i)=>`<button class="q-opt ${i===q.ans?'correct':i===ua&&ua!==q.ans?'wrong':''}" disabled>${String.fromCharCode(65+i)}. ${o}</button>`).join('')}
+        </div>
+        <div class="q-exp"><strong>${ua===q.ans?'✓ Correct!':'✗ Incorrect.'}</strong> ${q.exp}</div>
+        <button class="btn-next-q" style="margin-top:16px" onclick="nextQuestion()">${QS.idx+1<QUIZ.length?'Next Question →':'See Results'}</button>
+      </div>`;
+  }
+}
+
+function answerQuiz(i){
+  if(QS.answered) return;
+  QS.answered = true;
+  QS.userAns = i;
+  if(i === QUIZ[QS.idx].ans) QS.score++;
+  renderQuiz();
+}
+
+function nextQuestion(){
+  QS.idx++;
+  QS.answered = false;
+  QS.userAns = -1;
+  renderQuiz();
+}
+
+// ─── CHEAT SHEET ──────────────────────────────────────────────────────────────
+
+const SHEET_COLORS = ['#1e3a5f','#0284c7','#6366f1','#ef4444','#10b981'];
+
+function renderSheet(){
+  const body = document.getElementById('sheet-body');
+  if(!body) return;
+  body.innerHTML = `<div class="sheet-grid">${SHEETS.map((section,si)=>`
+    <div class="sheet-card">
+      <div class="sheet-card-hdr" style="background:${SHEET_COLORS[si%SHEET_COLORS.length]}">${section.title}</div>
+      ${section.items.map(item=>`
+        <div class="sheet-item">
+          <div>
+            <div class="sheet-item-name">${item.name}</div>
+            <div class="sheet-item-desc">${item.desc}</div>
+          </div>
+          ${item.cmd ? `<div class="sheet-item-cmd">${item.cmd}</div>` : ''}
+        </div>
+      `).join('')}
+    </div>
+  `).join('')}</div>`;
 }
 
 // ─── PLAYER ───────────────────────────────────────────────────────────────────
