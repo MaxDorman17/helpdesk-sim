@@ -1,0 +1,1054 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8"/>
+<meta name="viewport" content="width=device-width,initial-scale=1.0"/>
+<title>Help Desk Simulator · MaxNova Tech</title>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet"/>
+<style>
+*{margin:0;padding:0;box-sizing:border-box}
+body{font-family:'Inter',sans-serif;background:#f0f4f8;color:#1e293b;height:100vh;overflow:hidden;display:flex;flex-direction:column}
+a{text-decoration:none;color:inherit}
+
+/* HEADER */
+.hdr{background:#1e3a5f;color:#fff;padding:0 20px;height:52px;display:flex;align-items:center;justify-content:space-between;flex-shrink:0;gap:12px}
+.hdr-title{font-size:.95rem;font-weight:700;display:flex;align-items:center;gap:8px;white-space:nowrap}
+.hdr-title small{font-weight:400;opacity:.5;font-size:.8rem}
+.hdr-stats{display:flex;gap:10px}
+.hdr-pill{background:rgba(255,255,255,.1);padding:3px 12px;border-radius:20px;font-size:.78rem;color:rgba(255,255,255,.7)}
+.hdr-pill b{color:#fff}
+
+/* LAYOUT */
+.body{display:flex;flex:1;overflow:hidden}
+
+/* SIDEBAR */
+.sb{width:190px;background:#1e293b;flex-shrink:0;overflow-y:auto;padding:8px 0}
+.sb-sec{padding:12px 14px 4px;font-size:.65rem;color:rgba(255,255,255,.3);font-weight:700;text-transform:uppercase;letter-spacing:1px}
+.sb-item{display:flex;align-items:center;gap:9px;padding:9px 16px;font-size:.84rem;color:rgba(255,255,255,.55);cursor:pointer;transition:all .12s;border-left:2px solid transparent}
+.sb-item:hover{background:rgba(255,255,255,.04);color:rgba(255,255,255,.8)}
+.sb-item.active{background:rgba(56,189,248,.1);color:#38bdf8;border-left-color:#38bdf8}
+.sb-item .n{margin-left:auto;background:rgba(255,255,255,.08);color:rgba(255,255,255,.4);font-size:.7rem;padding:1px 6px;border-radius:10px}
+.sb-item.active .n{background:#38bdf8;color:#0f172a}
+.sb-div{height:1px;background:rgba(255,255,255,.06);margin:6px 12px}
+.sb-cat{display:flex;align-items:center;gap:8px;padding:6px 16px;font-size:.78rem;color:rgba(255,255,255,.38);cursor:default}
+.dot{width:7px;height:7px;border-radius:50%;flex-shrink:0}
+
+/* MAIN */
+.main{flex:1;overflow-y:auto;padding:20px}
+.view{display:none}.view.on{display:block}
+
+/* CARDS */
+.dash-grid{display:grid;grid-template-columns:repeat(4,1fr);gap:14px;margin-bottom:24px}
+.card{background:#fff;border-radius:10px;padding:18px;border:1px solid #e2e8f0}
+.card-lbl{font-size:.72rem;color:#94a3b8;font-weight:600;text-transform:uppercase;letter-spacing:.4px;margin-bottom:4px}
+.card-val{font-size:1.9rem;font-weight:800;color:#1e293b;line-height:1}
+.card-sub{font-size:.75rem;color:#94a3b8;margin-top:3px}
+
+/* SECTION TITLE */
+.sec-ttl{font-size:.95rem;font-weight:700;color:#1e293b;margin-bottom:14px}
+
+/* QUICK TICKET */
+.qt{background:#fff;border-radius:10px;border:1px solid #e2e8f0;padding:14px 18px;display:flex;align-items:center;gap:14px;cursor:pointer;transition:all .12s;margin-bottom:8px}
+.qt:hover{border-color:#0ea5e9;box-shadow:0 2px 12px rgba(14,165,233,.1)}
+.qt.done{opacity:.55}
+.qt-id{font-size:.75rem;font-weight:700;color:#94a3b8;font-family:monospace;flex-shrink:0;width:68px}
+.qt-title{font-size:.88rem;font-weight:500;color:#1e293b;flex:1}
+.qt-right{display:flex;align-items:center;gap:8px;flex-shrink:0}
+.qt-arrow{color:#94a3b8;font-size:.8rem}
+
+/* BADGES */
+.pri{display:inline-block;padding:2px 7px;border-radius:4px;font-size:.7rem;font-weight:700;text-transform:uppercase;letter-spacing:.3px}
+.p-critical{background:#fef2f2;color:#dc2626}
+.p-high{background:#fff7ed;color:#ea580c}
+.p-medium{background:#fffbeb;color:#d97706}
+.p-low{background:#f0fdf4;color:#16a34a}
+.cat-b{display:inline-block;padding:2px 7px;border-radius:4px;font-size:.7rem;font-weight:600;background:#f1f5f9;color:#475569}
+.sts{display:inline-flex;align-items:center;gap:4px;font-size:.75rem;font-weight:500}
+.sts-dot{width:6px;height:6px;border-radius:50%}
+.sts-open .sts-dot{background:#f59e0b}.sts-open{color:#b45309}
+.sts-done .sts-dot{background:#22c55e}.sts-done{color:#16a34a}
+
+/* TICKET TABLE */
+.tbl{background:#fff;border-radius:10px;border:1px solid #e2e8f0;overflow:hidden}
+.tbl-hdr{display:grid;grid-template-columns:78px 1fr 100px 120px 130px 90px;gap:10px;padding:9px 18px;background:#f8fafc;border-bottom:1px solid #e2e8f0;font-size:.7rem;font-weight:700;color:#94a3b8;text-transform:uppercase;letter-spacing:.3px}
+.tbl-row{display:grid;grid-template-columns:78px 1fr 100px 120px 130px 90px;gap:10px;padding:13px 18px;border-bottom:1px solid #f1f5f9;cursor:pointer;transition:background .1s;align-items:center}
+.tbl-row:last-child{border-bottom:none}
+.tbl-row:hover{background:#f8fafc}
+.t-id{font-size:.75rem;font-weight:700;color:#94a3b8;font-family:monospace}
+.t-ttl{font-size:.87rem;font-weight:500;color:#1e293b}
+.t-usr{font-size:.8rem;color:#64748b}
+.t-act{font-size:.78rem;font-weight:600;color:#0ea5e9}
+.tbl-row.done .t-act{color:#22c55e}
+
+/* PLAYER */
+.player-wrap{display:grid;grid-template-columns:300px 1fr;gap:18px;max-height:calc(100vh - 52px - 40px);overflow:hidden}
+.pl-left{background:#fff;border-radius:10px;border:1px solid #e2e8f0;overflow-y:auto;display:flex;flex-direction:column}
+.pl-head{padding:18px;border-bottom:1px solid #f1f5f9}
+.pl-meta{display:flex;gap:6px;margin-bottom:10px;flex-wrap:wrap;align-items:center}
+.pl-user{font-size:.95rem;font-weight:700;color:#1e293b;margin-bottom:1px}
+.pl-role{font-size:.78rem;color:#64748b;margin-bottom:14px}
+.pl-msg{background:#f8fafc;border-radius:7px;padding:12px;font-size:.84rem;color:#475569;line-height:1.6;border-left:3px solid #e2e8f0}
+.pl-msg-lbl{font-size:.65rem;font-weight:700;color:#94a3b8;text-transform:uppercase;letter-spacing:.5px;margin-bottom:4px}
+.pl-sec{padding:14px 18px;border-bottom:1px solid #f1f5f9}
+.pl-sec-lbl{font-size:.67rem;font-weight:700;color:#94a3b8;text-transform:uppercase;letter-spacing:.5px;margin-bottom:8px}
+.pl-row{display:flex;justify-content:space-between;font-size:.8rem;margin-bottom:5px}
+.pl-key{color:#64748b}
+.pl-val{font-weight:600;color:#1e293b}
+.prog-bar{height:4px;background:#e2e8f0;border-radius:2px;overflow:hidden;margin-top:6px}
+.prog-fill{height:100%;background:#0ea5e9;border-radius:2px;transition:width .3s}
+.hint-box{padding:14px 18px}
+.hint-lbl{font-size:.67rem;font-weight:700;color:#94a3b8;text-transform:uppercase;letter-spacing:.5px;margin-bottom:6px}
+.hint-txt{font-size:.8rem;color:#64748b;line-height:1.55}
+
+/* INVESTIGATION */
+.inv{background:#fff;border-radius:10px;border:1px solid #e2e8f0;display:flex;flex-direction:column;overflow:hidden}
+.inv-hdr{padding:14px 18px;border-bottom:1px solid #f1f5f9;font-size:.88rem;font-weight:700;color:#1e293b;display:flex;align-items:center;gap:8px}
+.inv-hdr small{font-size:.75rem;font-weight:400;color:#94a3b8;margin-left:auto}
+.inv-log{flex:1;overflow-y:auto;padding:16px;display:flex;flex-direction:column;gap:10px}
+.inv-foot{padding:14px 18px;border-top:1px solid #f1f5f9;background:#fafafa}
+.inv-foot-lbl{font-size:.75rem;font-weight:600;color:#475569;margin-bottom:9px}
+.opts{display:flex;flex-direction:column;gap:7px}
+.opt{text-align:left;padding:11px 14px;border:1.5px solid #e2e8f0;border-radius:8px;font-size:.86rem;color:#1e293b;background:#fff;cursor:pointer;font-family:'Inter',sans-serif;font-weight:500;transition:all .12s;line-height:1.4}
+.opt:hover:not(:disabled){border-color:#0ea5e9;background:#f0f9ff}
+.opt:disabled{cursor:default;opacity:.55}
+
+/* MESSAGES */
+.msg{border-radius:7px;padding:11px 13px;font-size:.84rem;line-height:1.6}
+.msg-lbl{font-size:.65rem;font-weight:700;text-transform:uppercase;letter-spacing:.5px;margin-bottom:3px;display:block}
+.m-sys{background:#f1f5f9;color:#475569;border-left:3px solid #cbd5e1}
+.m-sys .msg-lbl{color:#94a3b8}
+.m-act{background:#eff6ff;color:#1e40af;border-left:3px solid #93c5fd}
+.m-act .msg-lbl{color:#60a5fa}
+.m-good{background:#f0fdf4;color:#166534;border-left:3px solid #86efac}
+.m-good .msg-lbl{color:#4ade80}
+.m-ok{background:#fffbeb;color:#92400e;border-left:3px solid #fcd34d}
+.m-ok .msg-lbl{color:#fbbf24}
+.m-bad{background:#fef2f2;color:#991b1b;border-left:3px solid #fca5a5}
+.m-bad .msg-lbl{color:#f87171}
+
+/* RESOLUTION */
+.res-box{background:#f0fdf4;border:1px solid #bbf7d0;border-radius:10px;padding:18px}
+.res-ttl{font-size:.95rem;font-weight:800;color:#166534;margin-bottom:6px}
+.res-sum{font-size:.84rem;color:#15803d;margin-bottom:14px;line-height:1.5}
+.lesson{background:#fff;border-radius:8px;padding:13px;border:1px solid #dcfce7;margin-bottom:10px}
+.lesson-lbl{font-size:.65rem;font-weight:700;color:#16a34a;text-transform:uppercase;letter-spacing:.5px;margin-bottom:5px}
+.lesson-txt{font-size:.83rem;color:#374151;line-height:1.6}
+.tip{background:#eff6ff;border-radius:8px;padding:13px;border:1px solid #dbeafe;margin-bottom:14px}
+.tip-lbl{font-size:.65rem;font-weight:700;color:#2563eb;text-transform:uppercase;letter-spacing:.5px;margin-bottom:5px}
+.tip-txt{font-size:.82rem;color:#1e40af;line-height:1.5}
+.score-row{display:flex;gap:8px;flex-wrap:wrap;margin-bottom:14px}
+.sc-chip{padding:4px 12px;border-radius:20px;font-size:.78rem;font-weight:700}
+.sc-g{background:#dcfce7;color:#166534}
+.sc-o{background:#fef9c3;color:#854d0e}
+.sc-b{background:#fee2e2;color:#991b1b}
+.btn-next{width:100%;padding:11px;background:#0ea5e9;color:#fff;border:none;border-radius:8px;font-size:.88rem;font-weight:700;cursor:pointer;font-family:'Inter',sans-serif}
+.btn-next:hover{background:#0284c7}
+
+/* BACK */
+.back{display:inline-flex;align-items:center;gap:5px;font-size:.82rem;font-weight:600;color:#64748b;cursor:pointer;margin-bottom:14px}
+.back:hover{color:#1e3a5f}
+</style>
+</head>
+<body>
+
+<div class="hdr">
+  <div class="hdr-title">🎯 Help Desk Simulator <small>— practice real IT support, learn by doing</small></div>
+  <div class="hdr-stats">
+    <div class="hdr-pill">Resolved: <b id="h-res">0</b>/6</div>
+    <div class="hdr-pill">Score: <b id="h-score">—</b></div>
+  </div>
+</div>
+
+<div class="body">
+  <div class="sb">
+    <div class="sb-sec">Navigate</div>
+    <div class="sb-item active" id="nav-dash" onclick="goView('dash')">📊 Dashboard</div>
+    <div class="sb-item" id="nav-tix" onclick="goView('tix')">🎫 All Tickets <span class="n" id="sb-open">6</span></div>
+    <div class="sb-div"></div>
+    <div class="sb-sec">Categories</div>
+    <div class="sb-cat"><div class="dot" style="background:#3b82f6"></div>Microsoft 365</div>
+    <div class="sb-cat"><div class="dot" style="background:#8b5cf6"></div>Windows</div>
+    <div class="sb-cat"><div class="dot" style="background:#f59e0b"></div>Networking</div>
+    <div class="sb-cat"><div class="dot" style="background:#ef4444"></div>Security</div>
+    <div class="sb-cat"><div class="dot" style="background:#10b981"></div>Hardware</div>
+    <div class="sb-cat"><div class="dot" style="background:#6366f1"></div>Onboarding</div>
+  </div>
+
+  <div class="main">
+    <!-- DASHBOARD -->
+    <div class="view on" id="view-dash">
+      <div class="dash-grid">
+        <div class="card"><div class="card-lbl">Resolved</div><div class="card-val" id="d-res">0</div><div class="card-sub">out of 6 tickets</div></div>
+        <div class="card"><div class="card-lbl">Avg. Score</div><div class="card-val" id="d-score">—</div><div class="card-sub">efficiency rating</div></div>
+        <div class="card"><div class="card-lbl">Open</div><div class="card-val" id="d-open">6</div><div class="card-sub">awaiting your help</div></div>
+        <div class="card"><div class="card-lbl">Categories</div><div class="card-val" id="d-cats">0</div><div class="card-sub">out of 6 covered</div></div>
+      </div>
+      <div class="sec-ttl">Open Tickets — click one to start</div>
+      <div id="dash-list"></div>
+    </div>
+
+    <!-- TICKET LIST -->
+    <div class="view" id="view-tix">
+      <div class="sec-ttl">All Tickets</div>
+      <div class="tbl">
+        <div class="tbl-hdr"><div>ID</div><div>Title</div><div>Priority</div><div>Category</div><div>User</div><div>Status</div></div>
+        <div id="tbl-body"></div>
+      </div>
+    </div>
+
+    <!-- PLAYER -->
+    <div class="view" id="view-play">
+      <div class="back" onclick="goView('tix')">← Back to tickets</div>
+      <div class="player-wrap">
+        <div class="pl-left">
+          <div class="pl-head">
+            <div class="pl-meta">
+              <span class="pri" id="pl-pri"></span>
+              <span class="cat-b" id="pl-cat"></span>
+              <span style="font-size:.72rem;color:#94a3b8;font-family:monospace;font-weight:700" id="pl-id"></span>
+            </div>
+            <div class="pl-user" id="pl-user"></div>
+            <div class="pl-role" id="pl-role"></div>
+            <div class="pl-msg"><div class="pl-msg-lbl">User reported</div><div id="pl-msg"></div></div>
+          </div>
+          <div class="pl-sec">
+            <div class="pl-sec-lbl">Ticket info</div>
+            <div class="pl-row"><span class="pl-key">Logged</span><span class="pl-val" id="pl-time"></span></div>
+            <div class="pl-row"><span class="pl-key">Status</span><span class="pl-val" id="pl-sts"></span></div>
+          </div>
+          <div class="pl-sec">
+            <div class="pl-sec-lbl">Your progress</div>
+            <div class="pl-row"><span class="pl-key">Choices made</span><span class="pl-val" id="pl-steps">0</span></div>
+            <div class="pl-row"><span class="pl-key">Points</span><span class="pl-val" id="pl-pts">0</span></div>
+            <div class="prog-bar"><div class="prog-fill" id="pl-prog" style="width:0%"></div></div>
+          </div>
+          <div class="hint-box">
+            <div class="hint-lbl">💡 Approach hint</div>
+            <div class="hint-txt" id="pl-hint"></div>
+          </div>
+        </div>
+        <div class="inv">
+          <div class="inv-hdr">🔍 Investigation <small id="inv-lbl"></small></div>
+          <div class="inv-log" id="inv-log"></div>
+          <div class="inv-foot" id="inv-foot">
+            <div class="inv-foot-lbl">What do you do next?</div>
+            <div class="opts" id="opts"></div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<script>
+// ─── TICKET DATA ───────────────────────────────────────────────────────────────
+
+const TICKETS = [
+{
+  id:'TKT-001', title:"Outlook keeps asking for password",
+  priority:'high', category:'Microsoft 365', catColor:'#3b82f6',
+  user:'Sarah Mitchell', role:'Accounts Manager · Barker & Sons Ltd',
+  time:'09:14 today', hint:"Think about scale first — one user or everyone? Then think about what changed recently. Reinstalling Office is almost never the right first step.",
+  message:"Hi, my Outlook keeps popping up asking me to sign in but when I enter my password it just keeps asking again and again. I can't get to any of my emails. It's been like this since this morning — please help!",
+  scenes:{
+    start:{
+      prompt:"Sarah can't access her emails. Outlook is looping on the credential prompt.",
+      opts:[
+        {t:"Ask Sarah if any colleagues are having the same issue",    next:'scope',      pts:3, tag:'good', fb:"Scoping the issue first is best practice — one user vs everyone changes the entire diagnosis."},
+        {t:"Check Microsoft 365 Service Health in the admin portal",   next:'health_1st', pts:2, tag:'ok',   fb:"Good instinct — ruling out a service outage is always worth checking early."},
+        {t:"Tell Sarah to restart her PC",                             next:'reboot',     pts:1, tag:'ok',   fb:"Reasonable first step, but a reboot won't fix an auth token issue — you'll need to dig deeper."},
+        {t:"Remotely uninstall and reinstall Microsoft Office",        next:'reinstall',  pts:0, tag:'bad',  fb:"Way too drastic too early — takes 45+ minutes and won't fix an authentication problem."},
+      ]
+    },
+    scope:{
+      info:"You ask Sarah if colleagues are affected. She checks — just her. Everyone else is fine.",
+      prompt:"Isolated to Sarah only. What do you investigate next?",
+      opts:[
+        {t:"Ask Sarah if her password has changed recently",              next:'pwd',       pts:3, tag:'good', fb:"Excellent. A password change without updating cached credentials is the #1 cause of this exact issue."},
+        {t:"Clear cached Office credentials from Windows Credential Manager", next:'clr_creds', pts:3, tag:'good', fb:"Straight to the most likely fix — credential loops are almost always stale cached tokens."},
+        {t:"Check M365 Service Health to rule out an outage",             next:'health',   pts:2, tag:'ok',   fb:"Worth 30 seconds to confirm, though an outage would affect everyone, not just Sarah."},
+      ]
+    },
+    health_1st:{
+      info:"M365 Service Health shows all green — no outages or service disruptions.",
+      prompt:"No outage. What next?",
+      opts:[
+        {t:"Ask if Sarah is the only one affected",          next:'scope',   pts:2, tag:'ok',   fb:"Good — scope it (though you should have asked this before checking health)."},
+        {t:"Ask if her password changed recently",           next:'pwd',     pts:3, tag:'good', fb:"Yes — this is the most common cause of a single-user credential loop."},
+        {t:"Clear cached credentials in Credential Manager", next:'clr_creds', pts:3, tag:'good', fb:"Straight to the fix."},
+      ]
+    },
+    health:{
+      info:"M365 Service Health shows all services running normally.",
+      prompt:"No outage. What's most likely causing a credential loop for just one user?",
+      opts:[
+        {t:"Ask Sarah if her password has changed recently",           next:'pwd',       pts:3, tag:'good', fb:"This is the most common cause — stale cached password after a reset."},
+        {t:"Clear cached Office credentials from Credential Manager",  next:'clr_creds', pts:3, tag:'good', fb:"Correct — stale credentials in the Windows vault cause exactly this."},
+        {t:"Sign Sarah out of all Office apps via File > Account",     next:'sign_out',  pts:2, tag:'ok',   fb:"This can also work — signing out forces Office to request a fresh token."},
+      ]
+    },
+    reboot:{
+      info:"Sarah restarts her PC. Outlook opens — then immediately starts asking for credentials again.",
+      prompt:"Reboot didn't help. Auth issue is persisting.",
+      opts:[
+        {t:"Ask if Sarah's password recently changed",                next:'pwd',       pts:3, tag:'good', fb:"Good follow-up. Auth problems survive reboots."},
+        {t:"Clear cached credentials from Windows Credential Manager",next:'clr_creds', pts:3, tag:'good', fb:"Right — stale credentials persist across restarts."},
+        {t:"Check M365 Service Health",                               next:'health',    pts:1, tag:'ok',   fb:"Worth checking, though outages would affect all users."},
+      ]
+    },
+    reinstall:{
+      info:"You remote in and start uninstalling Office. Sarah has no email access for the next 40 minutes.",
+      prompt:"Office is being reinstalled...",
+      opts:[
+        {t:"Complete the reinstall and test Outlook", next:'reinstall_fail', pts:0, tag:'bad', fb:"The reinstall finishes. Outlook opens — and immediately goes into a credential loop again. Root cause wasn't Office at all."},
+      ]
+    },
+    reinstall_fail:{
+      info:"Office is reinstalled. Outlook opens and immediately loops on credentials again. 40 minutes wasted.",
+      prompt:"Same problem, different install. The issue is authentication, not the Office software.",
+      opts:[
+        {t:"Now clear the cached credentials from Credential Manager", next:'clr_creds', pts:1, tag:'ok', fb:"Should have been step 2. This is the actual fix."},
+      ]
+    },
+    pwd:{
+      info:"Sarah confirms — IT rolled out a mandatory password reset last Thursday for all staff. She updated her Windows login but forgot about Outlook.",
+      prompt:"Old password is cached in Outlook. What's the correct fix?",
+      opts:[
+        {t:"Clear the stale credentials from Windows Credential Manager", next:'clr_creds', pts:3, tag:'good', fb:"Exactly right — removing the cached entry lets Outlook use the current password."},
+        {t:"Sign Sarah out of Office via File > Account > Sign Out",      next:'sign_out',  pts:2, tag:'ok',   fb:"This also works — signing out clears the token and prompts a fresh login."},
+      ]
+    },
+    sign_out:{
+      info:"You guide Sarah: File > Office Account > Sign Out. She signs out of all Office apps.",
+      prompt:"Outlook is now asking Sarah to sign in.",
+      opts:[
+        {t:"Have Sarah enter her current (new) password", next:'resolved', pts:3, tag:'good', fb:"Sarah signs in with her new password. Outlook opens and her inbox syncs immediately."},
+      ]
+    },
+    clr_creds:{
+      info:"You open Windows Credential Manager (Control Panel > Credential Manager > Windows Credentials). You find and remove all entries containing 'MicrosoftOffice' and 'Office365'.",
+      prompt:"Credentials cleared. What now?",
+      opts:[
+        {t:"Restart Outlook and have Sarah sign in with her current password", next:'resolved', pts:3, tag:'good', fb:"Outlook prompts once, Sarah enters her new password, and it logs in and syncs her inbox perfectly."},
+      ]
+    },
+    resolved:{
+      resolved:true,
+      summary:"Sarah's Outlook is working. Inbox is syncing and she can send email normally.",
+      lesson:"Outlook credential loops are almost always caused by stale cached credentials — especially after a mandatory password reset. The fix is clearing credentials from Windows Credential Manager or signing out of Office. Never jump straight to reinstalling Office — it costs 40+ minutes and won't fix an auth issue. Always scope first (one user or everyone?) then ask about recent password changes.",
+      tip:"In M365 Admin > Users > Active Users > [user] > Sign out of all sessions, you can revoke all active tokens remotely. Useful when remote Credential Manager access is tricky."
+    }
+  }
+},
+
+{
+  id:'TKT-002', title:"Office printer showing offline for everyone",
+  priority:'medium', category:'Hardware / Printing', catColor:'#10b981',
+  user:'Jim Peters', role:'Finance Administrator · Barker & Sons Ltd',
+  time:'10:31 today', hint:"For hardware, always check the physical device first. A printer's display will tell you what's wrong in seconds — before you touch any software.",
+  message:"Hi, the printer in the finance office isn't working — it's showing as offline for everyone, not just me. We've got invoices that need printing urgently. Can you help?",
+  scenes:{
+    start:{
+      prompt:"Printer offline for the entire office. Where do you start?",
+      opts:[
+        {t:"Ask Jim to physically check the printer for any error lights or display messages", next:'physical', pts:3, tag:'good', fb:"Always check hardware first. The printer's display will tell you exactly what's wrong — faster than any software fix."},
+        {t:"Ask Jim if the printer was working yesterday",                                    next:'yesterday', pts:2, tag:'ok',  fb:"Useful context, but checking the physical state should come first."},
+        {t:"Restart the Print Spooler service on the print server",                           next:'spooler',   pts:1, tag:'ok',  fb:"Worth trying, but you're jumping to software before ruling out a physical fault."},
+        {t:"Remove and re-add the printer for Jim's PC",                                      next:'one_user',  pts:0, tag:'bad', fb:"This only fixes it for Jim — and you already know everyone is affected. Wrong scope."},
+      ]
+    },
+    physical:{
+      info:"Jim walks to the printer and checks the display. It shows: 'Paper jam — clear Tray 2'.",
+      prompt:"Paper jam in Tray 2. What do you do?",
+      opts:[
+        {t:"Guide Jim through clearing the paper jam", next:'clear_jam', pts:3, tag:'good', fb:"Exactly right — guide the user through it step by step."},
+        {t:"Try restarting the printer remotely via its web interface", next:'remote_restart', pts:0, tag:'bad', fb:"A restart won't clear a paper jam — it'll just restart with the jam still in it."},
+      ]
+    },
+    yesterday:{
+      info:"Jim confirms the printer was working fine at end of day yesterday.",
+      prompt:"Working fine last night, broken this morning. What's your next step?",
+      opts:[
+        {t:"Ask Jim to check the printer physically for any error messages", next:'physical', pts:3, tag:'good', fb:"Good — physical check should have been first. Error lights and the display will show the problem."},
+        {t:"Check if the printer's IP address has changed overnight",        next:'ip_check', pts:1, tag:'ok',  fb:"Possible cause but unlikely if it had a static IP. Check physical first."},
+        {t:"Restart the Print Spooler service",                              next:'spooler',  pts:1, tag:'ok',  fb:"Worth trying, but software fixes come after ruling out hardware issues."},
+      ]
+    },
+    spooler:{
+      info:"You restart the Print Spooler service on the print server. The printer status flickers but stays offline.",
+      prompt:"Spooler restart didn't fix it. The problem is clearly not software.",
+      opts:[
+        {t:"Ask Jim to check the printer physically for any error messages", next:'physical', pts:3, tag:'good', fb:"Now we're at the right step. The physical check will find the real problem."},
+        {t:"Check if the printer's IP has changed",                          next:'ip_check', pts:1, tag:'ok',  fb:"Check the device first — software and network fixes come after physical."},
+      ]
+    },
+    ip_check:{
+      info:"You check the DHCP lease table. The printer has the same IP as always. Not the issue.",
+      prompt:"IP is unchanged. What now?",
+      opts:[
+        {t:"Ask Jim to check the printer physically", next:'physical', pts:3, tag:'good', fb:"Should have done this first. The physical check always comes before network/software diagnosis."},
+      ]
+    },
+    one_user:{
+      info:"You remove and reinstall the printer for Jim. He can print — but 2 minutes later, Sarah messages saying she still can't print. You only fixed one person.",
+      prompt:"The underlying problem is still there. Rethink.",
+      opts:[
+        {t:"Check the printer physically for error messages", next:'physical', pts:2, tag:'ok', fb:"Now we're on the right track. Should have done this before touching any software."},
+      ]
+    },
+    remote_restart:{
+      info:"You restart the printer via its web interface. It reboots, displays its logo — then shows 'Paper jam — clear Tray 2' again.",
+      prompt:"A restart can't fix a paper jam. What now?",
+      opts:[
+        {t:"Guide Jim through clearing the paper jam", next:'clear_jam', pts:3, tag:'good', fb:"Paper jams need a human hand, not a restart."},
+      ]
+    },
+    clear_jam:{
+      info:"You walk Jim through it: open Tray 2, carefully pull out the jammed sheet, check for any torn bits, close the tray firmly. The display clears.",
+      prompt:"Display is clear. What do you do to confirm it's fixed?",
+      opts:[
+        {t:"Ask Jim to print a test page and confirm others can print too", next:'resolved', pts:3, tag:'good', fb:"Test page prints perfectly. Jim confirms the others in the office can print again too."},
+      ]
+    },
+    resolved:{
+      resolved:true,
+      summary:"Printer is back online. All users can print again. A test page confirmed successful operation.",
+      lesson:"Always check the physical state of hardware first. A printer's display will tell you exactly what's wrong in seconds — whether it's a paper jam, low toner, or a door open. Software fixes (Print Spooler, driver reinstall) cannot clear a paper jam. The fastest support is often the simplest: go look at the device.",
+      tip:"When a printer goes offline unexpectedly for everyone at once, it's almost always physical (jam, toner, door, power) rather than a network or driver issue. Network printer issues tend to affect only new users or happen after changes."
+    }
+  }
+},
+
+{
+  id:'TKT-003', title:"Laptop extremely slow — barely usable",
+  priority:'medium', category:'Windows', catColor:'#8b5cf6',
+  user:'Emma Clarke', role:'HR Manager · Barker & Sons Ltd',
+  time:'11:15 today', hint:"Open Task Manager first and check each column (CPU, Memory, Disk, Network). One of them will be maxed out — that tells you exactly where to look.",
+  message:"Hi, my laptop has been getting slower and slower all this week. Everything takes ages to open and sometimes it just freezes. I've tried restarting but it doesn't help. It's really affecting my work — please can you help?",
+  scenes:{
+    start:{
+      prompt:"Emma's laptop has been getting progressively slower all week. Where do you start?",
+      opts:[
+        {t:"Open Task Manager remotely and check resource usage",        next:'task_mgr',    pts:3, tag:'good', fb:"Task Manager is the fastest way to diagnose a slow PC — shows you exactly what's being maxed out."},
+        {t:"Ask Emma if anything changed recently (installs, updates)",  next:'recent',      pts:3, tag:'good', fb:"Good contextual question — recent changes are often the cause."},
+        {t:"Run a full antivirus scan",                                  next:'av_scan',     pts:1, tag:'ok',   fb:"Malware can cause slowness, but this should be a later step — Task Manager is much faster."},
+        {t:"Tell Emma to do a full shutdown and cold restart",           next:'cold_restart', pts:1, tag:'ok',  fb:"Worth trying once, but Emma said restarts haven't helped — investigate the cause instead."},
+      ]
+    },
+    task_mgr:{
+      info:"Task Manager opens. CPU: 14%, RAM: 48%, Network: minimal. But Disk: 100% — saturated.",
+      prompt:"Disk is at 100%. What does that usually mean?",
+      opts:[
+        {t:"Click the Disk column to see which process is using it",    next:'disk_procs', pts:2, tag:'ok',   fb:"Good diagnostic step. Shows nothing specific is maxing it — it's just general I/O slowness."},
+        {t:"Check available free space on the C: drive",                next:'disk_space', pts:3, tag:'good', fb:"100% disk usage with a slow PC almost always means the drive is full. Right call."},
+      ]
+    },
+    disk_procs:{
+      info:"No single process is the culprit — every app is queuing disk I/O and none can get through. This pattern points to insufficient free space rather than a rogue process.",
+      prompt:"General disk saturation, not one bad process. What's the likely cause?",
+      opts:[
+        {t:"Check available free space on C:",next:'disk_space', pts:3, tag:'good', fb:"Exactly the right move. Saturated disk with no single culprit = drive full."},
+      ]
+    },
+    recent:{
+      info:"Emma can't think of anything obvious. Windows Update did run on Monday, but she says the slowness started before that.",
+      prompt:"No obvious recent changes. What do you check next?",
+      opts:[
+        {t:"Open Task Manager to check system resources",   next:'task_mgr',   pts:3, tag:'good', fb:"Task Manager will show you immediately what's being overloaded."},
+        {t:"Check available disk space on C: drive",        next:'disk_space',  pts:3, tag:'good', fb:"Good thinking — checking disk space is fast and often reveals the issue."},
+      ]
+    },
+    av_scan:{
+      info:"Antivirus scan running — ETA 90 minutes. Emma can barely use the laptop while it runs. No threats found when it finishes.",
+      prompt:"No malware. 90 minutes later the laptop is still slow. What was actually wrong?",
+      opts:[
+        {t:"Open Task Manager and check resource usage", next:'task_mgr', pts:2, tag:'ok', fb:"Should have done this at the start — would have found the issue in 10 seconds."},
+        {t:"Check disk space on C:",                     next:'disk_space', pts:2, tag:'ok', fb:"Right direction — AV scan ruled out malware, disk space is the next check."},
+      ]
+    },
+    cold_restart:{
+      info:"Emma does a full cold restart. The laptop is still slow immediately on boot — disk is already at 100% before she's even opened anything.",
+      prompt:"Still slow from boot. Software-level issue eliminated. What next?",
+      opts:[
+        {t:"Open Task Manager and check resources", next:'task_mgr', pts:2, tag:'ok', fb:"Good — Task Manager from boot will show the real problem straight away."},
+      ]
+    },
+    disk_space:{
+      info:"C: drive: 1.8 GB free out of 256 GB. The drive is 99.3% full. Windows needs at least 10% free space for virtual memory and temp files.",
+      prompt:"Drive almost completely full. What's your fix?",
+      opts:[
+        {t:"Run Disk Cleanup (include system files for maximum recovery)",  next:'disk_cleanup', pts:3, tag:'good', fb:"Disk Cleanup removes Windows Update caches, temp files, and old system files — often recovers 5-15GB."},
+        {t:"Check Emma's Downloads folder for large unnecessary files",     next:'downloads',    pts:2, tag:'ok',   fb:"Downloads is often the first thing to check — users accumulate GBs of old files without realising."},
+        {t:"Set up OneDrive sync and move large files off the local drive", next:'onedrive',     pts:2, tag:'ok',   fb:"Good long-term fix, though Disk Cleanup first is faster for immediate relief."},
+      ]
+    },
+    disk_cleanup:{
+      info:"Disk Cleanup (with 'Clean up system files') finds: Windows Update cache 4.2 GB, Delivery Optimization 2.8 GB, Temp files 1.1 GB, Recycle Bin 890 MB. Total: ~9 GB.",
+      prompt:"9 GB recoverable. What do you also check to prevent this coming back?",
+      opts:[
+        {t:"Check Emma's Downloads folder and move docs to OneDrive", next:'downloads_after', pts:3, tag:'good', fb:"Perfect. Disk Cleanup buys time — addressing where files come from prevents recurrence."},
+      ]
+    },
+    downloads:{
+      info:"Downloads folder: 28 GB of old installers, ZIP files, screenshots, and PDFs Emma has never looked at.",
+      prompt:"28 GB of junk found. How do you proceed?",
+      opts:[
+        {t:"Help Emma delete junk and move important files to OneDrive", next:'resolved', pts:3, tag:'good', fb:"Emma deletes 20 GB, moves 8 GB to OneDrive. Drive goes from 1.8 GB to 29 GB free. PC is fast again."},
+        {t:"Also run Disk Cleanup for temp/system files",                next:'disk_cleanup', pts:2, tag:'ok', fb:"Good — combining Downloads cleanup with Disk Cleanup gives maximum recovery."},
+      ]
+    },
+    downloads_after:{
+      info:"Downloads has 28 GB of old files. You help Emma delete the junk and move work documents to OneDrive. Free space: 1.8 GB → 32 GB.",
+      prompt:"Drive has 32 GB free now. Test it out.",
+      opts:[
+        {t:"Ask Emma to open a few apps and confirm it's back to normal", next:'resolved', pts:3, tag:'good', fb:"Emma opens Outlook, Word, and Chrome simultaneously. Everything snappy. Issue resolved."},
+      ]
+    },
+    onedrive:{
+      info:"You help Emma set up OneDrive Desktop sync and move her large folders off the C: drive. Free space goes from 1.8 GB to 24 GB.",
+      prompt:"24 GB now free. Is that enough to fix the performance?",
+      opts:[
+        {t:"Test the laptop — open several apps and check Task Manager", next:'resolved', pts:3, tag:'good', fb:"Disk usage drops to a normal 20-30%. Emma confirms the laptop feels completely normal again."},
+      ]
+    },
+    resolved:{
+      resolved:true,
+      summary:"Emma's laptop is running normally. C: drive now has 30+ GB free and disk usage stays below 30% under normal use.",
+      lesson:"100% disk usage is one of the most common causes of a slow Windows PC. Windows needs free space for virtual memory, temp files, and Update caches — when the drive fills up, everything queues for I/O and the system crawls. Task Manager's Disk column shows this in seconds. Fix: Disk Cleanup (system files option), then clean Downloads, then set up OneDrive sync to prevent recurrence. An antivirus scan should never be your first step for a slow PC.",
+      tip:"After fixing, check C: free space regularly. A good rule of thumb: C: drive should always have at least 10-15% free. For a 256 GB drive, that's ~26 GB minimum. Set a low disk space alert in the RMM tool if your MSP uses one."
+    }
+  }
+},
+
+{
+  id:'TKT-004', title:"Can't connect to VPN from home — authentication failed",
+  priority:'high', category:'Networking', catColor:'#f59e0b',
+  user:'David Wang', role:'Senior Sales Executive · Barker & Sons Ltd',
+  time:'08:45 today', hint:"'Authentication failed' almost always means wrong credentials — not a software or network fault. Think about what might have changed with the user's login details.",
+  message:"Hi, I'm working from home today but I can't connect to the VPN. It just says 'Authentication failed'. I've tried several times. I need to access the file server for a client meeting at 10am — it's quite urgent.",
+  scenes:{
+    start:{
+      prompt:"David can't authenticate to the VPN. Working from home. Urgent — meeting at 10am.",
+      opts:[
+        {t:"Ask David if his internet connection is working fine",         next:'inet_ok',  pts:3, tag:'good', fb:"Good first check — rule out basic connectivity before anything else."},
+        {t:"Ask when the VPN last worked successfully",                    next:'last_worked', pts:3, tag:'good', fb:"Good context — knowing when it broke narrows down what changed."},
+        {t:"Ask David for the exact error message he's seeing",           next:'err_msg',  pts:2, tag:'ok',   fb:"You already know the error ('Authentication failed') but asking for the full message is sensible."},
+        {t:"Tell David to uninstall and reinstall the VPN client",        next:'reinstall', pts:0, tag:'bad',  fb:"Way too drastic — 'authentication failed' is a credentials issue, not a software fault."},
+      ]
+    },
+    inet_ok:{
+      info:"David confirms he can browse websites, stream video, use email — internet is working fine.",
+      prompt:"Internet is fine. What do you ask next?",
+      opts:[
+        {t:"Ask when the VPN last worked",                      next:'last_worked', pts:3, tag:'good', fb:"Knowing the timeline helps identify what changed."},
+        {t:"Ask if his network password has changed recently",  next:'pwd_chg',     pts:3, tag:'good', fb:"Straight to the most likely cause — a password change breaks VPN saved credentials."},
+        {t:"Ask him to read the full error message carefully",  next:'err_msg',     pts:2, tag:'ok',   fb:"Worth confirming, though auth failures almost always mean credential issues."},
+      ]
+    },
+    last_worked:{
+      info:"David says it worked perfectly last Wednesday. He was in the office Thursday and Friday so hadn't needed it until today.",
+      prompt:"Worked Wed, broken Mon. Three working days passed. What likely changed?",
+      opts:[
+        {t:"Ask if his network/Windows password changed since Wednesday",next:'pwd_chg',   pts:3, tag:'good', fb:"Exactly — a mandatory password rotation between Wed and Mon would explain this perfectly."},
+        {t:"Check VPN server logs for the failed auth attempts",         next:'vpn_logs', pts:2, tag:'ok',   fb:"Good technical step — logs will confirm it's a credentials mismatch."},
+      ]
+    },
+    err_msg:{
+      info:"Full error: 'VPN Error 691: Authentication failed — remote connection was denied because username/password combination not recognised.'",
+      prompt:"Error 691 = wrong credentials. What do you investigate?",
+      opts:[
+        {t:"Ask when VPN last worked and if anything changed",          next:'last_worked', pts:3, tag:'good', fb:"Good — timeline narrows down the cause."},
+        {t:"Ask if his password has changed since VPN last worked",     next:'pwd_chg',     pts:3, tag:'good', fb:"Straight to it — Error 691 is a credentials mismatch."},
+      ]
+    },
+    vpn_logs:{
+      info:"VPN server logs: repeated 'Authentication failure for user david.wang — invalid credentials.' No other errors.",
+      prompt:"Logs confirm it's definitely a credentials issue. What's the root cause?",
+      opts:[
+        {t:"Ask David if his Windows/domain password changed since last Wednesday",next:'pwd_chg', pts:3, tag:'good', fb:"Yes — the logs confirmed a credentials mismatch. Password change is the most likely cause."},
+      ]
+    },
+    pwd_chg:{
+      info:"David pauses... 'Actually yes — I got an IT email on Thursday saying I needed to reset my password for the quarterly rotation. I did it at my desk.'",
+      prompt:"Password changed Thursday, VPN credentials still using old password. How do you fix it?",
+      opts:[
+        {t:"Ask David to update the saved password in his VPN client",               next:'update_creds', pts:3, tag:'good', fb:"Exactly right. The VPN client has the old password saved — just update it."},
+        {t:"Reset David's VPN account password in the admin panel",                  next:'wrong_fix',    pts:0, tag:'bad',  fb:"The VPN uses his Windows/domain credentials — there isn't a separate VPN password to reset."},
+        {t:"Tell David to delete and re-add the VPN connection from scratch",        next:'reconnect',    pts:1, tag:'ok',   fb:"This works but is unnecessary — you can just update the password in the existing connection."},
+      ]
+    },
+    wrong_fix:{
+      info:"You go to the VPN admin panel to reset David's VPN password — but there isn't a separate VPN login. The VPN authenticates against Windows/Active Directory credentials.",
+      prompt:"The VPN uses his domain account, not a separate login. How do you actually fix it?",
+      opts:[
+        {t:"Ask David to update the saved password in his VPN client to his new password",next:'update_creds', pts:1, tag:'ok', fb:"Should have been the first approach. VPN clients save credentials and need updating when passwords change."},
+      ]
+    },
+    reconnect:{
+      info:"David deletes and re-adds the VPN connection. When prompted, he enters his new password.",
+      prompt:"He enters the new password and tries to connect.",
+      opts:[
+        {t:"Ask David to test the connection and confirm he can access the file server",next:'resolved', pts:3, tag:'good', fb:"Connection succeeds. David can access the file server and is ready for his meeting."},
+      ]
+    },
+    update_creds:{
+      info:"David opens his VPN client, finds the saved credentials, and updates the password to his new one.",
+      prompt:"Credentials updated. Test it.",
+      opts:[
+        {t:"Ask David to connect and verify he can reach the file server",next:'resolved', pts:3, tag:'good', fb:"VPN connects immediately. David can access the file server. Meeting is saved."},
+      ]
+    },
+    reinstall:{
+      info:"David uninstalls and reinstalls the VPN client. He enters his credentials — and gets the same 'Authentication failed' error.",
+      prompt:"Same error after a fresh install. The software was never the problem.",
+      opts:[
+        {t:"Ask David if his password has changed recently",next:'pwd_chg', pts:1, tag:'ok', fb:"This was the right question all along. Password change = VPN stops working. Always ask this first for auth failures."},
+      ]
+    },
+    resolved:{
+      resolved:true,
+      summary:"David is connected to VPN and can access the file server. His 10am meeting is safe.",
+      lesson:"'Authentication failed' on a VPN almost always means wrong saved credentials — especially after a password change. VPN clients save passwords and will not automatically update when your Windows/domain password rotates. The fix is simple: update the saved credentials. This resolves 80% of VPN auth failures in under 2 minutes. Always ask 'has your password changed recently?' before any technical troubleshooting.",
+      tip:"When your MSP sets up password rotation policies, consider sending a reminder that VPN clients need the password updating too. Some VPN clients (like GlobalProtect) can use SSO/SAML to avoid this problem entirely — worth considering for clients who work remotely often."
+    }
+  }
+},
+
+{
+  id:'TKT-005', title:"New employee starting Monday — needs full setup",
+  priority:'low', category:'Onboarding / M365 Admin', catColor:'#6366f1',
+  user:'Karen Fox', role:'Office Manager · Barker & Sons Ltd',
+  time:'15:00 Friday', hint:"Onboarding has a specific order: get all the details FIRST, then create the account, assign license, set permissions, set up MFA, prepare the laptop, then send credentials. Missing any step causes problems on day one.",
+  message:"Hi, we have a new employee starting Monday. Her name is Jessica Smith and she'll be joining us as Marketing Assistant. She'll need an email account, access to the shared marketing folder, and a laptop. Could you sort this before Monday please?",
+  scenes:{
+    start:{
+      prompt:"New starter Monday. What's your first move?",
+      opts:[
+        {t:"Gather all the details you need from Karen before doing anything else",next:'gather',       pts:3, tag:'good', fb:"Always get full requirements first — you need name, email format, role, software, groups, and start date before anything else."},
+        {t:"Create Jessica's M365 user account straight away",                    next:'create_early', pts:1, tag:'ok',   fb:"You're keen but you don't have all the details yet — what email format does the company use? What license? What groups?"},
+        {t:"Start preparing a spare laptop while you gather info",                next:'laptop_first', pts:1, tag:'ok',   fb:"Not a bad idea to start in parallel, but you don't know what software she needs yet."},
+        {t:"Add Jessica to the Marketing shared folder right now",                next:'folder_first', pts:0, tag:'bad',  fb:"She doesn't have an account yet — you can't grant folder access to someone with no M365 account."},
+      ]
+    },
+    gather:{
+      info:"Karen provides: Full name: Jessica Smith. Email: jessica.smith@barkerandsons.co.uk. Title: Marketing Assistant. Needs: Microsoft 365, Teams, Adobe Reader. Groups: All Staff, Marketing Team, Marketing Shared Drive. Start date: Monday 9am.",
+      prompt:"You have everything you need. What's step 1?",
+      opts:[
+        {t:"Create Jessica's M365 user account in the admin portal", next:'create_acct', pts:3, tag:'good', fb:"Correct order: account first, everything else depends on it."},
+      ]
+    },
+    create_early:{
+      info:"You start creating the account but realise you don't know the email format (is it firstname.lastname or firstinitial.lastname?), what license to assign, or which groups she needs. You have to go back to Karen anyway.",
+      prompt:"Missing key info. Get it from Karen before continuing.",
+      opts:[
+        {t:"Go back to Karen to get all the details properly",next:'gather', pts:1, tag:'ok', fb:"Should have done this first — but better late than never."},
+      ]
+    },
+    laptop_first:{
+      info:"You grab a spare laptop and start factory resetting it — then realise you don't know what software she needs, what email to enrol it under, or even what her M365 account will be yet.",
+      prompt:"Can't set up the laptop without the account. Get requirements from Karen first.",
+      opts:[
+        {t:"Pause and get full requirements from Karen",next:'gather', pts:1, tag:'ok', fb:"Right decision — account creation should drive the laptop setup, not the other way around."},
+      ]
+    },
+    folder_first:{
+      info:"You go to SharePoint to add Jessica to the Marketing folder but there's no jessica.smith@barkerandsons.co.uk account in the system yet.",
+      prompt:"Can't grant access to an account that doesn't exist. What do you do first?",
+      opts:[
+        {t:"Get requirements from Karen and create the account first",next:'gather', pts:1, tag:'ok', fb:"Correct order: account → license → permissions. Can't do step 3 before step 1."},
+      ]
+    },
+    create_acct:{
+      info:"In M365 Admin > Users > Active Users > Add a user. You create jessica.smith@barkerandsons.co.uk with the display name Jessica Smith and job title Marketing Assistant.",
+      prompt:"Account created. What's next?",
+      opts:[
+        {t:"Assign the correct Microsoft 365 license to her account", next:'assign_lic', pts:3, tag:'good', fb:"Without a license, she gets an account but no apps — no Outlook, no Teams, nothing."},
+        {t:"Set a temporary password and require change on first sign-in", next:'temp_pwd', pts:2, tag:'ok', fb:"Important step, but assign the license first — she needs it to actually use the account."},
+      ]
+    },
+    assign_lic:{
+      info:"You assign Microsoft 365 Business Standard — includes Outlook, Teams, SharePoint, OneDrive, Word, Excel, PowerPoint.",
+      prompt:"License assigned. What next?",
+      opts:[
+        {t:"Set a temporary password and require it changed on first sign-in", next:'temp_pwd', pts:3, tag:'good', fb:"Never set a permanent password for a new user — force a change so only they know it."},
+        {t:"Enable MFA for the account immediately",                            next:'mfa',      pts:2, tag:'ok',   fb:"MFA is essential, but set the temp password first so she can actually log in and set up MFA herself."},
+      ]
+    },
+    temp_pwd:{
+      info:"Temporary password set: Welcome2026! — with 'must change password at next sign-in' ticked.",
+      prompt:"Account and license ready, temp password set. What's next?",
+      opts:[
+        {t:"Add Jessica to the correct M365 groups and distribution lists", next:'add_groups', pts:3, tag:'good', fb:"Groups give her access to shared emails, calendars, and resources — essential from day one."},
+        {t:"Enable MFA for the account",                                    next:'mfa',        pts:3, tag:'good', fb:"MFA is a security essential — enable it before she logs in for the first time."},
+      ]
+    },
+    add_groups:{
+      info:"Added Jessica to: All Staff distribution list, Marketing Team DL, and the All Company calendar. Confirmed with Karen these are correct.",
+      prompt:"Groups done. What's an important security step before she logs in?",
+      opts:[
+        {t:"Enable MFA for the account",                                next:'mfa',        pts:3, tag:'good', fb:"Enabling MFA before first login means she has to set it up herself — most secure approach."},
+        {t:"Grant her access to the Marketing SharePoint folder",        next:'sharepoint', pts:2, tag:'ok',   fb:"Important, but do MFA first — security should never be left until later."},
+      ]
+    },
+    mfa:{
+      info:"MFA enabled via M365 Admin > Users > Multi-factor authentication. Jessica will be prompted to set up MFA on her very first login.",
+      prompt:"Account, license, password, groups, MFA all done. What's next?",
+      opts:[
+        {t:"Grant access to the Marketing shared drive in SharePoint", next:'sharepoint', pts:3, tag:'good', fb:"SharePoint permissions are the last account-level task before setting up the physical laptop."},
+      ]
+    },
+    sharepoint:{
+      info:"You navigate to SharePoint > Marketing Documents > Share > Add jessica.smith@barkerandsons.co.uk with Edit access. Done.",
+      prompt:"All account setup complete. What's left?",
+      opts:[
+        {t:"Prepare Jessica's laptop (reset, enrol, install software)", next:'laptop', pts:3, tag:'good', fb:"Laptop is the last major task — account is all ready, now prepare the physical hardware."},
+      ]
+    },
+    laptop:{
+      info:"You take a spare laptop, factory reset it, and enrol it in Microsoft Intune/Endpoint Manager. Core apps deploy via policy. You manually install Adobe Reader. Device is named BARKER-JESSICA-L01.",
+      prompt:"Laptop ready. One final step before Monday.",
+      opts:[
+        {t:"Send Karen a welcome email with Jessica's credentials and first-login instructions", next:'resolved', pts:3, tag:'good', fb:"Karen gets: email address, temp password, MFA setup instructions, IT contact. Monday morning will go smoothly."},
+      ]
+    },
+    resolved:{
+      resolved:true,
+      summary:"Jessica's account is fully set up. Laptop enrolled and ready. Karen has the welcome email. Monday 9am start will go smoothly.",
+      lesson:"New starter setup has a critical order: 1) Get all requirements first. 2) Create M365 account. 3) Assign license. 4) Set temp password (force change). 5) Add to groups. 6) Enable MFA. 7) Grant SharePoint/shared drive access. 8) Set up laptop. 9) Send welcome email with credentials. Missing step 1 wastes everyone's time. Skipping MFA is a security risk. Sending credentials before the account is ready causes a confusing first day.",
+      tip:"Build a 'new starter checklist' document for your MSP clients. A consistent checklist means nothing gets missed and new starters always have a good day one. Some MSPs build this into their onboarding service as a premium add-on."
+    }
+  }
+},
+
+{
+  id:'TKT-006', title:"Suspicious email — possible phishing attack",
+  priority:'high', category:'Security', catColor:'#ef4444',
+  user:'Tom Bradley', role:'Sales Representative · Barker & Sons Ltd',
+  time:'13:22 today', hint:"The very first question with any suspicious email is always: 'Did you click any links or enter any credentials?' This determines the urgency of everything else.",
+  message:"Hi, I just got an email saying my Microsoft account has been locked and I need to click a link urgently to verify my identity or I'll lose access. It has the Microsoft logo and looks completely real. I almost clicked it. Should I click it? Is it genuine?",
+  scenes:{
+    start:{
+      prompt:"Tom received a suspicious 'Microsoft account locked' email with a link. What's your FIRST question?",
+      opts:[
+        {t:"Urgently ask Tom: did he click the link or enter any details?",           next:'click_check', pts:3, tag:'good', fb:"This is always the first question — if he clicked and entered credentials, it's an active security incident that needs immediate action."},
+        {t:"Ask Tom to forward the email to you so you can analyse it",               next:'forward',     pts:2, tag:'ok',   fb:"Good, but first confirm whether he interacted with it — that determines urgency."},
+        {t:"Immediately reset Tom's Microsoft 365 password as a precaution",          next:'reset_early', pts:0, tag:'bad',  fb:"Don't panic-reset before you know what happened — you don't know if he clicked anything yet."},
+        {t:"Tell Tom it's definitely phishing and to just delete the email",           next:'tell_delete', pts:1, tag:'ok',   fb:"It's probably phishing, but you should investigate, document, and block — not just tell him to delete it."},
+      ]
+    },
+    click_check:{
+      info:"Tom says he did NOT click the link. He got suspicious because of the urgency and called you first. Well done to Tom.",
+      prompt:"No link clicked — no active breach. Now investigate the email.",
+      opts:[
+        {t:"Ask Tom to forward the email to you for analysis",                  next:'forward',      pts:3, tag:'good', fb:"You need to see the actual email — sender address, headers, link destination — to confirm it's phishing."},
+        {t:"Check the sender address Tom can see in the 'From' field",          next:'check_sender', pts:3, tag:'good', fb:"The From address is often the giveaway. Fake domains, typosquatting, or spoofed names are common."},
+      ]
+    },
+    forward:{
+      info:"Tom forwards the email. You open it safely. Sender shows: 'Microsoft Support <security-alert@micros0ft-verify.net>'. Hovering the link reveals: http://micros0ft-verify.net/unlock — clearly a fake domain.",
+      prompt:"Confirmed phishing. 'micros0ft' uses a zero instead of 'o'. What do you do now?",
+      opts:[
+        {t:"Have Tom report it via Outlook's 'Report Message > Phishing' button",   next:'report_outlook',  pts:3, tag:'good', fb:"Reporting via Outlook sends the email to Microsoft for analysis and improves spam filters."},
+        {t:"Block the sender domain in M365 Defender",                              next:'block_domain',    pts:3, tag:'good', fb:"Blocking micros0ft-verify.net stops future emails from this domain reaching anyone in the company."},
+        {t:"Educate Tom on the warning signs straight away",                        next:'educate',         pts:2, tag:'ok',   fb:"Important, but handle the security response (report + block) first, then educate."},
+      ]
+    },
+    check_sender:{
+      info:"Tom reads out the From address: 'Microsoft Support <security-alert@micros0ft-verify.net>'. You spot it immediately — 'micros0ft' uses a zero (0) instead of the letter 'o'. Classic typosquatting.",
+      prompt:"Fake domain confirmed. What's the security response?",
+      opts:[
+        {t:"Ask Tom to report it in Outlook using Report Message > Phishing", next:'report_outlook', pts:3, tag:'good', fb:"Reporting via Outlook submits it to Microsoft and helps protect everyone."},
+        {t:"Block the domain in M365 Defender immediately",                   next:'block_domain',   pts:3, tag:'good', fb:"Blocking the domain stops any future phishing emails from this campaign reaching staff."},
+      ]
+    },
+    report_outlook:{
+      info:"Tom clicks Report Message > Phishing in Outlook. The email is submitted to Microsoft for analysis. Microsoft will use this to update phishing filters.",
+      prompt:"Reported. What else should you do?",
+      opts:[
+        {t:"Block the sender domain in M365 Defender",                  next:'block_domain', pts:3, tag:'good', fb:"Outlook reporting helps Microsoft globally — blocking in Defender protects THIS company specifically."},
+        {t:"Check if the email was sent to other staff too",             next:'check_spread', pts:2, tag:'ok',   fb:"Worth checking — if it was a targeted campaign, others might have received it too."},
+      ]
+    },
+    block_domain:{
+      info:"M365 Defender > Email & Collaboration > Policies & Rules > Threat Policies > Anti-spam > Block list. You add micros0ft-verify.net. Future emails from this domain will be blocked before reaching users.",
+      prompt:"Domain blocked. Was it sent to anyone else in the company?",
+      opts:[
+        {t:"Check M365 Defender Explorer to see who else received it", next:'check_spread', pts:3, tag:'good', fb:"Always check spread — one phishing email is often sent to many users. Others might have clicked."},
+        {t:"Educate Tom on what to look for in future",                next:'educate',      pts:2, tag:'ok',   fb:"Education is important, but check if others were targeted first."},
+      ]
+    },
+    check_spread:{
+      info:"M365 Defender > Threat Explorer shows: the email was sent to Tom and one other — Sarah Mitchell. Sarah hasn't reported it. You message her immediately to check.",
+      prompt:"Sarah received it too. She says she did open it but 'didn't do anything'.",
+      opts:[
+        {t:"Ask Sarah directly: did she click any links or type in any details?", next:'sarah_clicked', pts:3, tag:'good', fb:"Critical — 'didn't do anything' is vague. You need to know if she clicked and whether she entered credentials."},
+      ]
+    },
+    sarah_clicked:{
+      info:"Sarah thinks harder — she clicked the link but the page looked broken so she closed it immediately without entering anything.",
+      prompt:"Link clicked but no credentials entered. What's the immediate response?",
+      opts:[
+        {t:"Reset Sarah's M365 password and revoke her active sessions immediately", next:'educate', pts:3, tag:'good', fb:"Even with no credentials entered, a clicked link could have used a browser exploit. Password reset + session revoke is the right call. Then educate both users."},
+      ]
+    },
+    tell_delete:{
+      info:"Tom deletes the email. But you haven't documented, reported, or checked if others received it — and the threat is still live.",
+      prompt:"Email is deleted — but the campaign is still active. What should you do?",
+      opts:[
+        {t:"Check M365 Defender to see if others received the phishing email", next:'check_spread', pts:2, tag:'ok', fb:"Good — always check spread. Deleting one copy doesn't mean the threat is handled."},
+        {t:"Block the sender domain in M365 Defender",                         next:'block_domain', pts:2, tag:'ok', fb:"Correct — blocking the domain prevents future emails even if you can't recover the deleted one."},
+      ]
+    },
+    reset_early:{
+      info:"You reset Tom's password. He's confused — he says he hasn't clicked anything. You've caused disruption without establishing what actually happened.",
+      prompt:"Password reset was premature. Did he even click the link?",
+      opts:[
+        {t:"Ask Tom if he clicked the link or entered any details",next:'click_check', pts:1, tag:'ok', fb:"Should have been question #1. Establish facts before taking action."},
+      ]
+    },
+    educate:{
+      info:"You walk Tom through the warning signs: 1) Sender was micros0ft-verify.net — not microsoft.com. Spot the zero. 2) Urgent 'act now or lose access' language is a manipulation tactic. 3) Generic greeting — no name used. 4) Microsoft never emails asking you to click a link to unlock your account. Go directly to account.microsoft.com instead. Tom says he'll know next time.",
+      prompt:"Tom is educated. What's left to do?",
+      opts:[
+        {t:"Confirm the domain is blocked and the incident is logged", next:'resolved', pts:3, tag:'good', fb:"Always log security incidents — even near-misses. Your MSP should have a security log or ticketing system for this."},
+      ]
+    },
+    resolved:{
+      resolved:true,
+      summary:"Phishing email handled. Reported to Microsoft, domain blocked, affected users educated, incident logged.",
+      lesson:"For suspicious emails, the correct process is: 1) FIRST ask 'did you click the link or enter anything?' — this determines urgency. 2) Check the sender domain carefully — one wrong character is the giveaway. 3) Report via Outlook Report Message. 4) Block the domain in M365 Defender. 5) Use Defender Explorer to check if others received it. 6) Educate the user. Microsoft will NEVER email you saying your account is locked and to click a link — always go directly to the service website.",
+      tip:"Consider running simulated phishing campaigns for your MSP clients (KnowBe4, Proofpoint etc have free tiers). Sending fake phishing emails and seeing who clicks teaches staff better than any training video — and shows clients the value of security awareness training as a service."
+    }
+  }
+}
+];
+
+// ─── APP STATE ────────────────────────────────────────────────────────────────
+
+const S = {
+  view: 'dash',
+  ticket: null,
+  sessions: JSON.parse(localStorage.getItem('hds_sessions')||'{}'),
+  resolved: new Set(JSON.parse(localStorage.getItem('hds_resolved')||'[]')),
+};
+
+function save(){
+  localStorage.setItem('hds_sessions', JSON.stringify(S.sessions));
+  localStorage.setItem('hds_resolved', JSON.stringify([...S.resolved]));
+}
+
+// ─── VIEW SWITCHING ───────────────────────────────────────────────────────────
+
+function goView(v, ticketId){
+  S.view = v;
+  document.querySelectorAll('.view').forEach(el=>el.classList.remove('on'));
+  document.querySelectorAll('.sb-item').forEach(el=>el.classList.remove('active'));
+  document.getElementById('view-'+v).classList.add('on');
+  if(v==='dash'||v==='tix') document.getElementById('nav-'+v).classList.add('active');
+  if(v==='play' && ticketId){
+    S.ticket = ticketId;
+    renderPlayer();
+  }
+  updateGlobal();
+  if(v==='dash') renderDash();
+  if(v==='tix')  renderTable();
+}
+
+// ─── GLOBAL STATS ─────────────────────────────────────────────────────────────
+
+function updateGlobal(){
+  const res = S.resolved.size;
+  const open = TICKETS.length - res;
+  document.getElementById('h-res').textContent = res;
+  document.getElementById('d-res').textContent = res;
+  document.getElementById('d-open').textContent = open;
+  document.getElementById('sb-open').textContent = open;
+
+  const scores = Object.values(S.sessions).filter(s=>s.resolved).map(s=>s.pct);
+  const avgScore = scores.length ? Math.round(scores.reduce((a,b)=>a+b,0)/scores.length) : null;
+  const scoreStr = avgScore !== null ? avgScore+'%' : '—';
+  document.getElementById('h-score').textContent = scoreStr;
+  document.getElementById('d-score').textContent = scoreStr;
+
+  const cats = new Set(TICKETS.filter(t=>S.resolved.has(t.id)).map(t=>t.category));
+  document.getElementById('d-cats').textContent = cats.size;
+}
+
+// ─── DASHBOARD ────────────────────────────────────────────────────────────────
+
+function renderDash(){
+  const el = document.getElementById('dash-list');
+  el.innerHTML = TICKETS.map(t=>{
+    const done = S.resolved.has(t.id);
+    const priClass = {high:'p-high',medium:'p-medium',low:'p-low',critical:'p-critical'}[t.priority]||'p-medium';
+    return `<div class="qt ${done?'done':''}" onclick="goView('play','${t.id}')">
+      <div class="t-id">${t.id}</div>
+      <div class="qt-title">${t.title}</div>
+      <div class="qt-right">
+        <span class="pri ${priClass}">${t.priority}</span>
+        <span class="cat-b">${t.category}</span>
+        ${done?'<span style="color:#22c55e;font-size:.8rem;font-weight:700">✓ Resolved</span>':'<span class="qt-arrow">→</span>'}
+      </div>
+    </div>`;
+  }).join('');
+}
+
+// ─── TICKET TABLE ─────────────────────────────────────────────────────────────
+
+function renderTable(){
+  const el = document.getElementById('tbl-body');
+  el.innerHTML = TICKETS.map(t=>{
+    const done = S.resolved.has(t.id);
+    const priClass = {high:'p-high',medium:'p-medium',low:'p-low',critical:'p-critical'}[t.priority]||'p-medium';
+    return `<div class="tbl-row ${done?'done':''}" onclick="goView('play','${t.id}')">
+      <div class="t-id">${t.id}</div>
+      <div class="t-ttl">${t.title}</div>
+      <div><span class="pri ${priClass}">${t.priority}</span></div>
+      <div><span class="cat-b" style="font-size:.68rem">${t.category}</span></div>
+      <div class="t-usr">${t.user}</div>
+      <div class="t-act">${done?'✓ Resolved':'→ Start'}</div>
+    </div>`;
+  }).join('');
+}
+
+// ─── PLAYER ───────────────────────────────────────────────────────────────────
+
+function renderPlayer(){
+  const t = TICKETS.find(t=>t.id===S.ticket);
+  if(!t) return;
+
+  // Init session
+  if(!S.sessions[t.id]) S.sessions[t.id] = {scene:'start', log:[], pts:0, steps:0, good:0, ok:0, bad:0, resolved:false, pct:0};
+  const sess = S.sessions[t.id];
+
+  // Fill left panel
+  const priClass = {high:'p-high',medium:'p-medium',low:'p-low',critical:'p-critical'}[t.priority]||'p-medium';
+  document.getElementById('pl-id').textContent = t.id;
+  document.getElementById('pl-pri').className = `pri ${priClass}`;
+  document.getElementById('pl-pri').textContent = t.priority;
+  document.getElementById('pl-cat').textContent = t.category;
+  document.getElementById('pl-user').textContent = t.user;
+  document.getElementById('pl-role').textContent = t.role;
+  document.getElementById('pl-msg').textContent = t.message;
+  document.getElementById('pl-time').textContent = t.time;
+  document.getElementById('pl-hint').textContent = t.hint;
+  document.getElementById('pl-sts').textContent = S.resolved.has(t.id) ? '✓ Resolved' : 'Open';
+
+  renderLog(t, sess);
+}
+
+function renderLog(t, sess){
+  const log = document.getElementById('inv-log');
+  const foot = document.getElementById('inv-foot');
+  const scene = t.scenes[sess.scene];
+
+  // Update progress
+  document.getElementById('pl-steps').textContent = sess.steps;
+  document.getElementById('pl-pts').textContent = sess.pts;
+  const pct = Math.min(100, Math.round((sess.pts / 15) * 100));
+  document.getElementById('pl-prog').style.width = pct + '%';
+
+  // Build log
+  let html = `<div class="msg m-sys"><span class="msg-lbl">System</span>Ticket ${t.id} opened. ${t.title}.</div>`;
+  for(const entry of sess.log){
+    if(entry.type==='action'){
+      html += `<div class="msg m-act"><span class="msg-lbl">You chose</span>${entry.text}</div>`;
+    } else if(entry.type==='info'){
+      html += `<div class="msg m-sys"><span class="msg-lbl">Result</span>${entry.text}</div>`;
+    } else if(entry.type==='fb'){
+      const cls = {good:'m-good',ok:'m-ok',bad:'m-bad'}[entry.tag]||'m-sys';
+      const lbl = {good:'✓ Good call',ok:'~ Reasonable',bad:'✗ Not ideal'}[entry.tag]||'Feedback';
+      html += `<div class="msg ${cls}"><span class="msg-lbl">${lbl}</span>${entry.text}</div>`;
+    }
+  }
+
+  if(scene && scene.prompt && !sess.resolved){
+    html += `<div class="msg m-sys"><span class="msg-lbl">Situation</span>${scene.prompt}</div>`;
+  }
+
+  if(sess.resolved){
+    const sc = t.scenes['resolved'];
+    html += `<div class="res-box">
+      <div class="res-ttl">✓ Ticket Resolved</div>
+      <div class="res-sum">${sc.summary}</div>
+      <div class="score-row">
+        <span class="sc-chip sc-g">✓ Good choices: ${sess.good}</span>
+        <span class="sc-chip sc-o">~ OK choices: ${sess.ok}</span>
+        ${sess.bad?`<span class="sc-chip sc-b">✗ Wrong turns: ${sess.bad}</span>`:''}
+        <span class="sc-chip sc-g" style="background:#dbeafe;color:#1e40af">Score: ${sess.pct}%</span>
+      </div>
+      <div class="lesson"><div class="lesson-lbl">📚 Key lesson</div><div class="lesson-txt">${sc.lesson}</div></div>
+      <div class="tip"><div class="tip-lbl">💡 Pro tip</div><div class="tip-txt">${sc.tip}</div></div>
+      <button class="btn-next" onclick="goView('tix')">← Back to ticket list</button>
+    </div>`;
+  }
+
+  log.innerHTML = html;
+  log.scrollTop = log.scrollHeight;
+
+  // Build options or hide footer
+  if(sess.resolved){
+    foot.style.display = 'none';
+  } else {
+    foot.style.display = '';
+    document.getElementById('inv-lbl').textContent = `Step ${sess.steps + 1}`;
+    document.getElementById('opts').innerHTML = scene.opts.map((o,i)=>
+      `<button class="opt" onclick="choose(${i})">${o.t}</button>`
+    ).join('');
+  }
+}
+
+function choose(idx){
+  const t = TICKETS.find(t=>t.id===S.ticket);
+  const sess = S.sessions[t.id];
+  const scene = t.scenes[sess.scene];
+  const opt = scene.opts[idx];
+
+  // Disable buttons
+  document.querySelectorAll('.opt').forEach(b=>b.disabled=true);
+
+  // Update session
+  sess.steps++;
+  sess.pts += opt.pts;
+  if(opt.tag==='good') sess.good++;
+  else if(opt.tag==='ok') sess.ok++;
+  else if(opt.tag==='bad') sess.bad++;
+
+  // Log the choice
+  sess.log.push({type:'action', text:opt.t});
+  const nextScene = t.scenes[opt.next];
+  if(nextScene && nextScene.info) sess.log.push({type:'info', text:nextScene.info});
+  sess.log.push({type:'fb', tag:opt.tag, text:opt.fb});
+
+  // Transition
+  sess.scene = opt.next;
+  const ns = t.scenes[opt.next];
+  if(ns && ns.resolved){
+    sess.resolved = true;
+    // Calculate score
+    const maxPts = 12; // reasonable max for perfect play
+    sess.pct = Math.min(100, Math.round((sess.pts / maxPts) * 100));
+    S.resolved.add(t.id);
+  }
+
+  save();
+  renderLog(t, sess);
+  updateGlobal();
+}
+
+// ─── RESET ────────────────────────────────────────────────────────────────────
+
+function resetAll(){
+  if(!confirm('Reset all progress? This cannot be undone.')) return;
+  S.sessions = {}; S.resolved = new Set();
+  save(); goView('dash');
+}
+
+// ─── INIT ─────────────────────────────────────────────────────────────────────
+updateGlobal();
+renderDash();
+</script>
+
+<div style="position:fixed;bottom:10px;right:14px;font-size:.7rem;color:rgba(0,0,0,.2);cursor:pointer" onclick="resetAll()">reset progress</div>
+</body>
+</html>
