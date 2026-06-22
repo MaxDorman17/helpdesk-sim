@@ -190,7 +190,7 @@ a{text-decoration:none;color:inherit}
 <div class="hdr">
   <div class="hdr-title">🎯 Help Desk Simulator <small>— practice real IT support, learn by doing</small></div>
   <div class="hdr-stats">
-    <div class="hdr-pill">Resolved: <b id="h-res">0</b>/6</div>
+    <div class="hdr-pill">Resolved: <b id="h-res">0</b>/31</div>
     <div class="hdr-pill">Score: <b id="h-score">—</b></div>
   </div>
 </div>
@@ -216,9 +216,9 @@ a{text-decoration:none;color:inherit}
     <!-- DASHBOARD -->
     <div class="view on" id="view-dash">
       <div class="dash-grid">
-        <div class="card"><div class="card-lbl">Resolved</div><div class="card-val" id="d-res">0</div><div class="card-sub">out of 6 tickets</div></div>
+        <div class="card"><div class="card-lbl">Resolved</div><div class="card-val" id="d-res">0</div><div class="card-sub">out of 31 tickets</div></div>
         <div class="card"><div class="card-lbl">Avg. Score</div><div class="card-val" id="d-score">—</div><div class="card-sub">efficiency rating</div></div>
-        <div class="card"><div class="card-lbl">Open</div><div class="card-val" id="d-open">6</div><div class="card-sub">awaiting your help</div></div>
+        <div class="card"><div class="card-lbl">Open</div><div class="card-val" id="d-open">31</div><div class="card-sub">awaiting your help</div></div>
         <div class="card"><div class="card-lbl">Categories</div><div class="card-val" id="d-cats">0</div><div class="card-sub">out of 6 covered</div></div>
       </div>
       <div class="sec-ttl">Open Tickets — click one to start</div>
@@ -228,9 +228,11 @@ a{text-decoration:none;color:inherit}
     <!-- TICKET LIST -->
     <div class="view" id="view-tix">
       <div class="sec-ttl">All Tickets</div>
-      <div class="tbl">
-        <div class="tbl-hdr"><div>ID</div><div>Title</div><div>Priority</div><div>Category</div><div>User</div><div>Status</div></div>
-        <div id="tbl-body"></div>
+      <div style="overflow-y:auto;flex:1;min-height:0">
+        <div class="tbl">
+          <div class="tbl-hdr"><div>ID</div><div>Title</div><div>Priority</div><div>Category</div><div>User</div><div>Status</div></div>
+          <div id="tbl-body"></div>
+        </div>
       </div>
     </div>
 
@@ -274,17 +276,24 @@ a{text-decoration:none;color:inherit}
           </div>
         </div>
       </div>
+    </div>
+
     <!-- QUIZ -->
     <div class="view" id="view-quiz">
       <div class="sec-ttl">🧠 CompTIA A+ Quiz — test your knowledge</div>
-      <div id="quiz-body" style="overflow-y:auto;flex:1;min-height:0"></div>
+      <div style="overflow-y:auto;flex:1;min-height:0;padding-bottom:20px">
+        <div id="quiz-body"></div>
+      </div>
     </div>
 
     <!-- CHEAT SHEET -->
     <div class="view" id="view-sheet">
       <div class="sec-ttl">📋 IT Support Cheat Sheet — commands, shortcuts &amp; quick fixes</div>
-      <div id="sheet-body" style="overflow-y:auto;flex:1;min-height:0"></div>
+      <div style="overflow-y:auto;flex:1;min-height:0">
+        <div id="sheet-body"></div>
+      </div>
     </div>
+
     </div>
   </div>
 </div>
