@@ -984,7 +984,7 @@ function renderLog(t, sess){
   }
 
   log.innerHTML = html;
-  log.scrollTop = log.scrollHeight;
+  setTimeout(()=>{ log.scrollTop = log.scrollHeight; }, 0);
 
   // Build options or hide footer
   if(sess.resolved){
